@@ -120,8 +120,13 @@
           body: JSON.stringify({ username, password }),
         });
 
-        const data = await res.json();
-
+        let data;
+try {
+  data = await res.json();
+} catch {
+  const text = await res.text();
+  throw new Error(`Server tidak mengembalikan JSON: ${text}`);
+    }
         if (res.ok && data.success) {
           // Jika login berhasil
           window.location.href = "/user/reseller/index.html";
