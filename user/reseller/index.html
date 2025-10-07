@@ -24,7 +24,7 @@
       align-items: center;
       min-height: 100vh;
     }
-    .card, .dashboard {
+    .dashboard {
       background: var(--card-bg);
       padding: 40px 30px;
       border-radius: 14px;
@@ -104,39 +104,26 @@
       color: var(--muted);
       margin-top: 15px;
     }
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="loginPage" class="card">
-  <h2>Login Reseller</h2>
-  <p class="sub">Masukkan username & pilih paket</p>
-  <label>Username</label>
-  <input id="loginUser" placeholder="Username">
-  <label>Paket RAM</label>
-  <select id="loginPaket">
-    <option value="">-- Pilih Paket --</option>
-    <option value="1gb">1GB</option>
-    <option value="2gb">2GB</option>
-    <option value="3gb">3GB</option>
-    <option value="4gb">4GB</option>
-    <option value="5gb">5GB</option>
-    <option value="6gb">6GB</option>
-    <option value="7gb">7GB</option>
-    <option value="8gb">8GB</option>
-    <option value="9gb">9GB</option>
-    <option value="10gb">10GB</option>
-    <option value="unli">Unlimited</option>
-  </select>
-  <button onclick="doLogin()">Login</button>
-  <footer>© 2025 Reseller Gaming Panel</footer>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboardPage" class="dashboard hidden">
-  <!-- SALAMAT DATANG + JAM WIB -->
-  <h2 id="greeting">Selamat datang, <span id="username">-</span>!</h2>
+<div class="dashboard">
+  <h2 id="greeting">Selamat datang, User!</h2>
   <p class="sub" id="clock">Jam WIB: --:--:--</p>
 
   <div class="info">
@@ -146,13 +133,7 @@
     <div class="stat"><span>Paket Anda</span> <b id="paket">-</b></div>
   </div>
 
-  <button onclick="logout()">Logout</button>
-  <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border)">
-
   <!-- BUAT PANEL BARU -->
-  <h2>Buat Panel Baru</h2>
-  <p class="sub">Isi username & pilih paket RAM</p>
-
   <div id="step1">
     <label>Username Panel</label>
     <input id="panelUser" placeholder="Username baru">
@@ -171,9 +152,12 @@
       <option value="10gb">10GB</option>
       <option value="unli">Unlimited</option>
     </select>
-    <button onclick="buatPanel()">Buat Panel</button>
+    <button onclick="buatPanel()">
+      <span id="btnText">Buat Panel</span><span id="spinner" class="loading hidden"></span>
+    </button>
   </div>
 
+  <!-- HASIL -->
   <div id="step2" class="hidden">
     <div class="success-box">
       <b>Email:</b> <span id="email">-</span><br>
@@ -182,69 +166,43 @@
       <b>Link:</b> <a href="https://domainpanel.resellergaming.my.id" target="_blank" style="color: var(--primary)">Buka Panel</a><br>
       <b>Paket:</b> <span id="ram">-</span>
     </div>
-    <button onclick="resetForm()">Buat Panel Lagi</button>
+    <button onclick="resetForm()">Kembali</button>
+    <button onclick="logout()" style="margin-top: 10px;">Logout</button>
   </div>
 
   <footer>© 2025 Reseller Gaming Panel</footer>
 </div>
 
 <script>
-/* ---------- LOGIN ---------- */
-function doLogin() {
-  const u = document.getElementById('loginUser').value.trim();
-  const p = document.getElementById('loginPaket').value;
-  if (!u || !p) return alert('Username dan paket wajib diisi!');
-  localStorage.setItem('username', u);
-  localStorage.setItem('paket', p);
-  showDashboard();
+/* ---------- JAM WIB ---------- */
+function updateClock() {
+  const now = new Date();
+  const wib = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
+  const time = wib.toLocaleTimeString('id-ID');
+  document.getElementById('clock').innerText = `Jam WIB: ${time}`;
 }
+updateClock();
+setInterval(updateClock, 1000);
 
-function logout() {
-  localStorage.clear();
-  location.reload();
-}
+/* ---------- IP & BATERAI ---------- */
+fetch('https://api.ipify.org?format=json')
+  .then(r => r.json())
+  .then(d => document.getElementById('ip').innerText = d.ip)
+  .catch(() => document.getElementById('ip').innerText = 'Gagal memuat');
 
-/* ---------- DASHBOARD ---------- */
-function showDashboard() {
-  document.getElementById('loginPage').classList.add('hidden');
-  document.getElementById('dashboardPage').classList.remove('hidden');
-
-  const u = localStorage.getItem('username');
-  const p = localStorage.getItem('paket');
-  document.getElementById('username').innerText = u;
-  document.getElementById('paket').innerText = p ? p.toUpperCase() : '-';
-
-  // Jam WIB
-  function updateClock() {
-    const now = new Date();
-    const wib = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
-    const time = wib.toLocaleTimeString('id-ID');
-    document.getElementById('clock').innerText = `Jam WIB: ${time}`;
-  }
-  updateClock();
-  setInterval(updateClock, 1000);
-
-  // IP
-  fetch('https://api.ipify.org?format=json')
-    .then(r => r.json())
-    .then(d => document.getElementById('ip').innerText = d.ip)
-    .catch(() => document.getElementById('ip').innerText = 'Gagal memuat');
-
-  // Baterai
-  if ('getBattery' in navigator) {
-    navigator.getBattery().then(bat => {
-      function upd() {
-        const pr = Math.round(bat.level * 100);
-        const ch = bat.charging ? '🔌 Mengisi' : '⚡ Tidak mengisi';
-        document.getElementById('baterai').innerText = `${pr}% (${ch})`;
-      }
-      upd();
-      bat.addEventListener('levelchange', upd);
-      bat.addEventListener('chargingchange', upd);
-    });
-  } else {
-    document.getElementById('baterai').innerText = 'Tidak didukung';
-  }
+if ('getBattery' in navigator) {
+  navigator.getBattery().then(bat => {
+    function upd() {
+      const pr = Math.round(bat.level * 100);
+      const ch = bat.charging ? '🔌 Mengisi' : '⚡ Tidak mengisi';
+      document.getElementById('baterai').innerText = `${pr}% (${ch})`;
+    }
+    upd();
+    bat.addEventListener('levelchange', upd);
+    bat.addEventListener('chargingchange', upd);
+  });
+} else {
+  document.getElementById('baterai').innerText = 'Tidak didukung';
 }
 
 /* ---------- BUAT PANEL ---------- */
@@ -267,6 +225,10 @@ async function buatPanel() {
   const paket = document.getElementById('panelPaket').value;
   if (!user || !paket) return alert('Username dan paket wajib diisi!');
 
+  // animasi loading
+  document.getElementById('btnText').innerText = 'Membuat...';
+  document.getElementById('spinner').classList.remove('hidden');
+
   const cfg = hargaPaket[paket];
   try {
     const res = await fetch(
@@ -285,6 +247,9 @@ async function buatPanel() {
     }
   } catch (e) {
     alert('Terjadi kesalahan: ' + e.message);
+  } finally {
+    document.getElementById('btnText').innerText = 'Buat Panel';
+    document.getElementById('spinner').classList.add('hidden');
   }
 }
 
@@ -295,8 +260,10 @@ function resetForm() {
   document.getElementById('panelPaket').value = '';
 }
 
-/* ---------- INIT ---------- */
-if (localStorage.getItem('username')) showDashboard();
+function logout() {
+  localStorage.clear();
+  location.reload();
+}
 </script>
 </body>
-      </html>
+  </html>
