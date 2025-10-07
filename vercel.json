@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1.js"
+    },
+    {
+      "src": "/owner/create",
+      "dest": "/owner/create/index.html"
+    },
+    {
+      "src": "/owner/create/(.*)",
+      "dest": "/owner/create/$1"
+    },
+    {
+      "src": "/user/reseller",
+      "dest": "/user/reseller/index.html"
+    },
+    {
+      "src": "/user/reseller/(.*)",
+      "dest": "/user/reseller/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
