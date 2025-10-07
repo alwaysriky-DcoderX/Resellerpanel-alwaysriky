@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f6fa;
+      padding: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th {
+      background: #0052cc;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2>📊 Data Akun User</h2>
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Username</th>
+        <th>Dibuat Pada</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadUsers() {
+      try {
+        const res = await fetch("/api/getUsers", {
+          headers: { Authorization: "supersecret123" }
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+
+        const tbody = document.querySelector("#userTable tbody");
+        tbody.innerHTML = "";
+        data.users.forEach((u, i) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${i + 1}</td>
+            <td>${u.username}</td>
+            <td>${new Date(u.created_at).toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        alert("Gagal memuat data: " + err.message);
+      }
+    }
+    loadUsers();
+  </script>
+</body>
+</html>
