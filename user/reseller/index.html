@@ -153,7 +153,7 @@
       <option value="unli">Unlimited</option>
     </select>
     <button onclick="buatPanel()">
-      <span id="btnText">Buat Panel</span><span id="spinner" class="loading hidden"></span>
+      <span id="btnText">CREATE PANEL</span><span id="spinner" class="loading hidden"></span>
     </button>
   </div>
 
@@ -242,13 +242,14 @@ async function buatPanel() {
       document.getElementById('uname').innerText = data.user.attributes.username;
       document.getElementById('pass').innerText = data.user.attributes.username;
       document.getElementById('ram').innerText = paket.toUpperCase();
+      alert('✅ Panel berhasil dibuat!');
     } else {
-      alert('Gagal membuat panel. Coba lagi.');
+      alert('❌ Gagal membuat panel. Coba lagi.');
     }
   } catch (e) {
-    alert('Terjadi kesalahan: ' + e.message);
+    alert('⚠️ Terjadi kesalahan: ' + e.message);
   } finally {
-    document.getElementById('btnText').innerText = 'Buat Panel';
+    document.getElementById('btnText').innerText = 'CREATE PANEL';
     document.getElementById('spinner').classList.add('hidden');
   }
 }
@@ -261,8 +262,8 @@ function resetForm() {
 }
 
 function logout() {
-  localStorage.clear();
-  location.reload();
+  // Ganti link di bawah dengan URL tujuan setelah logout
+  window.location.href = 'https://google.com';
 }
 </script>
 </body>
