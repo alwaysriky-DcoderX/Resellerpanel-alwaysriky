@@ -31,6 +31,7 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       max-width: 450px;
       width: 90%;
+      animation: fadeIn 0.4s ease;
     }
     h2 {
       font-size: 22px;
@@ -56,6 +57,13 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 15px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,82,204,0.15);
     }
     button {
       width: 100%;
@@ -66,9 +74,11 @@
       border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
+      transition: background 0.3s ease, transform 0.15s ease;
     }
     button:hover {
       background: var(--primary-dark);
+      transform: translateY(-1px);
     }
     .info {
       background: #f0f6ff;
@@ -85,6 +95,10 @@
       border-radius: 8px;
       padding: 10px 14px;
       margin: 6px 0;
+      transition: all 0.2s ease;
+    }
+    .stat:hover {
+      background: #eef3ff;
     }
     .hidden {
       display: none;
@@ -105,15 +119,22 @@
       margin-top: 15px;
     }
 
-    /* Loading Fullscreen */
+    /* Loading overlay modern */
     .loading-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0, 0, 0, 0.55);
       display: flex;
       justify-content: center;
       align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
       z-index: 9999;
+    }
+    .loading-overlay.show {
+      opacity: 1;
+      visibility: visible;
     }
     .loading-box {
       background: #fff;
@@ -122,18 +143,30 @@
       text-align: center;
       font-size: 16px;
       color: var(--text);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      animation: popIn 0.3s ease;
     }
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #ccc;
+      width: 44px;
+      height: 44px;
+      border: 4px solid transparent;
       border-top-color: var(--primary);
+      border-right-color: var(--primary);
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s ease-in-out infinite;
       margin: 0 auto 15px;
     }
+
     @keyframes spin {
       to { transform: rotate(360deg); }
+    }
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -150,7 +183,6 @@
     <div class="stat"><span>Paket Anda</span> <b id="paket">-</b></div>
   </div>
 
-  <!-- BUAT PANEL BARU -->
   <div id="step1">
     <label>Username Panel</label>
     <input id="panelUser" placeholder="Username baru">
@@ -172,7 +204,6 @@
     <button onclick="buatPanel()">CREATE PANEL</button>
   </div>
 
-  <!-- HASIL -->
   <div id="step2" class="hidden">
     <div class="success-box">
       <b>Email:</b> <span id="email">-</span><br>
@@ -188,8 +219,8 @@
   <footer>© 2025 Reseller Gaming Panel</footer>
 </div>
 
-<!-- Loading Fullscreen -->
-<div id="loadingOverlay" class="loading-overlay hidden">
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
   <div class="loading-box">
     <div class="spinner"></div>
     Sedang membuat panel...
@@ -199,10 +230,8 @@
 <script>
 /* ---------- JAM WIB ---------- */
 function updateClock() {
-  const now = new Date();
-  const wib = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
-  const time = wib.toLocaleTimeString('id-ID');
-  document.getElementById('clock').innerText = `Jam WIB: ${time}`;
+  const now = new Date().toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta' });
+  document.getElementById('clock').innerText = `Jam WIB: ${now}`;
 }
 updateClock();
 setInterval(updateClock, 1000);
@@ -246,33 +275,34 @@ const hargaPaket = {
 async function buatPanel() {
   const user = document.getElementById('panelUser').value.trim();
   const paket = document.getElementById('panelPaket').value;
+  const loading = document.getElementById('loadingOverlay');
   if (!user || !paket) return alert('Username dan paket wajib diisi!');
 
-  // Tampilkan loading fullscreen
-  document.getElementById('loadingOverlay').classList.remove('hidden');
+  loading.classList.add('show'); // tampil smooth
 
   const cfg = hargaPaket[paket];
   try {
     const res = await fetch(
-      `https://api.resellergaming.my.id/pterodactyl/addpanel?domain=https://domainpanel.com&plta=plta_mu&username=${user}&disk=${cfg.disk}&cpu=${cfg.cpu}`
+      `https://api.resellergaming.my.id/pterodactyl/addpanel?domain=https://starhostprivate.panelwota.my.id&plta=ptla_LhRs5SKH5A9oCbLoFwRCDmePeUzrbxvakKZ8BnkdrOE&username=${user}&disk=${cfg.disk}&cpu=${cfg.cpu}&ram=${cfg.ram}`
     );
     const data = await res.json();
-    if (data && data.user) {
+
+    if (data?.user?.attributes) {
+      const u = data.user.attributes;
       document.getElementById('step1').classList.add('hidden');
       document.getElementById('step2').classList.remove('hidden');
-      document.getElementById('email').innerText = data.user.attributes.email;
-      document.getElementById('uname').innerText = data.user.attributes.username;
-      document.getElementById('pass').innerText = data.user.attributes.username;
+      document.getElementById('email').innerText = u.email;
+      document.getElementById('uname').innerText = u.username;
+      document.getElementById('pass').innerText = u.password || u.username;
       document.getElementById('ram').innerText = paket.toUpperCase();
       alert('✅ Panel berhasil dibuat!');
     } else {
-      alert('❌ Gagal membuat panel. Coba lagi.');
+      alert(`❌ Gagal membuat panel: ${data?.error || 'Unknown error'}`);
     }
   } catch (e) {
     alert('⚠️ Terjadi kesalahan: ' + e.message);
   } finally {
-    // Sembunyikan loading
-    document.getElementById('loadingOverlay').classList.add('hidden');
+    loading.classList.remove('show'); // hilang smooth
   }
 }
 
@@ -284,9 +314,8 @@ function resetForm() {
 }
 
 function logout() {
-  // Ganti dengan link tujuan setelah logout
   window.location.href = 'https://google.com';
 }
 </script>
 </body>
-      </html>
+  </html>
