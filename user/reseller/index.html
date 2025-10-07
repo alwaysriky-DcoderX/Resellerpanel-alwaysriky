@@ -1,22 +1,134 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reseller Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Reseller | Reseller Gaming</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Roboto, sans-serif;
-      background: #f0f7ff;
-      padding: 40px;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    h1 {
-      color: #0070f3;
+    .dashboard {
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+      max-width: 450px;
+      width: 90%;
+      text-align: left;
+    }
+    h2 {
+      font-size: 22px;
+      color: #111;
+      margin-bottom: 10px;
+    }
+    .info {
+      background: #f0f6ff;
+      border: 1px solid #d0e0ff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 25px;
+    }
+    .info b {
+      color: #003d99;
+    }
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      background: #f8f9fb;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 6px 0;
+      border: 1px solid #eee;
+    }
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: #777;
+      margin-top: 15px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      background: #0052cc;
+      border: none;
+      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #003d99;
     }
   </style>
 </head>
 <body>
-  <h1>Selamat datang di Dashboard Reseller 🚀</h1>
-  <p>Login berhasil! Kamu sekarang berada di halaman khusus reseller.</p>
+
+<div class="dashboard">
+  <h2>Selamat Datang, <span id="username">User</span> 👋</h2>
+  <div class="info">
+    <p><b>Informasi Akun:</b></p>
+    <div class="stat"><span>Alamat IP</span> <b id="ip">Mendeteksi...</b></div>
+    <div class="stat"><span>Status Baterai</span> <b id="baterai">Mendeteksi...</b></div>
+    <div class="stat"><span>Paket Anda</span> <b id="paket">-</b></div>
+  </div>
+
+  <button onclick="logout()">Logout</button>
+  <footer>© 2025 Reseller Gaming Panel</footer>
+</div>
+
+<script>
+  // Ambil username & paket dari localStorage (diset waktu login)
+  const uname = localStorage.getItem('username');
+  const paket = localStorage.getItem('paket');
+  if (!uname) {
+    alert('Silakan login terlebih dahulu.');
+    window.location.href = '/login.html'; // arahkan ke halaman login
+  } else {
+    document.getElementById('username').innerText = uname;
+    document.getElementById('paket').innerText = paket ? paket.toUpperCase() : '-';
+  }
+
+  // Ambil IP address publik
+  fetch('https://api.ipify.org?format=json')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('ip').innerText = data.ip;
+    })
+    .catch(() => {
+      document.getElementById('ip').innerText = 'Gagal memuat';
+    });
+
+  // Status baterai
+  if ('getBattery' in navigator) {
+    navigator.getBattery().then(battery => {
+      function updateBattery() {
+        const persen = Math.round(battery.level * 100);
+        const charging = battery.charging ? '🔌 Mengisi' : '⚡ Tidak mengisi';
+        document.getElementById('baterai').innerText = `${persen}% (${charging})`;
+      }
+      updateBattery();
+      battery.addEventListener('levelchange', updateBattery);
+      battery.addEventListener('chargingchange', updateBattery);
+    });
+  } else {
+    document.getElementById('baterai').innerText = 'Tidak didukung';
+  }
+
+  // Tombol logout
+  function logout() {
+    localStorage.clear();
+    window.location.href = '/login.html';
+  }
+</script>
+
 </body>
-</html>
+                                     </html>
