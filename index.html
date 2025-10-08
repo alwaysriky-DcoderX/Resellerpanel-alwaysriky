@@ -6,12 +6,12 @@
   <title>Login Panel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
     * {
       box-sizing: border-box;
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
 
     body {
@@ -20,42 +20,41 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: radial-gradient(circle at top, #1e1e2f, #0c0c1a);
-      color: white;
+      background: #000;
+      color: #fff;
     }
 
     .login-box {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 2rem;
-      border-radius: 20px;
+      background: #111;
+      padding: 2.5rem 2rem;
+      border-radius: 12px;
       width: 90%;
       max-width: 400px;
       text-align: center;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 0 1px #333, 0 10px 30px rgba(0,0,0,.6);
     }
 
     h2 {
       margin-bottom: 1.5rem;
-      color: #00d9ff;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
     }
 
     input {
       width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 10px 0;
+      border: 1px solid #333;
+      border-radius: 8px;
       outline: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      transition: all 0.3s ease;
+      background: #000;
+      color: #fff;
+      transition: border-color .25s;
     }
 
     input:focus {
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 5px #00d9ff;
+      border-color: #fff;
     }
 
     button {
@@ -63,28 +62,28 @@
       padding: 12px;
       margin-top: 10px;
       border: none;
-      border-radius: 10px;
-      background: #00d9ff;
+      border-radius: 8px;
+      background: #fff;
       color: #000;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: background .25s, color .25s;
     }
 
     button:hover {
-      background: #00aaff;
-      transform: scale(1.02);
+      background: #e5e5e5;
     }
 
     .loading {
       display: none;
       margin-top: 10px;
       animation: pulse 1s infinite;
-      color: #00d9ff;
+      color: #888;
+      font-size: .9rem;
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 0.3; }
+      0%, 100% { opacity: .4; }
       50% { opacity: 1; }
     }
 
@@ -92,10 +91,26 @@
       display: none;
       margin-top: 10px;
       padding: 10px;
-      background: rgba(255, 0, 0, 0.2);
-      border-radius: 8px;
-      color: #ff9b9b;
+      background: rgba(255, 0, 0, 0.08);
+      border-radius: 6px;
+      color: #ff5555;
       font-size: 0.9rem;
+    }
+
+    .admin-link {
+      margin-top: 1.2rem;
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .admin-link a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .admin-link a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -109,6 +124,9 @@
       <div class="loading">⏳ Sedang memeriksa...</div>
       <div id="errorBox"></div>
     </form>
+    <div class="admin-link">
+      Anda admin? <a href="/admin/">Klik disini</a>
+    </div>
   </div>
 
   <script>
