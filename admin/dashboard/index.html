@@ -3,70 +3,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Admin</title>
+  <title>Admin Dashboard | Panel Reseller</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; transition: 0.2s; }
     body {
       font-family: 'Inter', sans-serif;
-      background: #f5f6fa;
+      background: #f4f6f8;
+      margin: 0;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    header h1 { font-size: 20px; margin: 0; }
+    header .right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    button {
+      background: #fff;
+      border: none;
+      color: #007bff;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #e8f0ff; }
+    main {
+      flex: 1;
       padding: 30px;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:none;} }
+    .table-container {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow-x: auto;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      margin-top: 10px;
     }
     th, td {
-      padding: 14px;
-      border-bottom: 1px solid #eee;
       text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #eee;
     }
-    th {
-      background: #0052cc;
-      color: white;
+    th { background: #f9fafc; font-weight: 600; }
+    tr:hover { background: #f4f8ff; }
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      color: #888;
     }
+    .dark {
+      background: #1e1e2e;
+      color: #eee;
+    }
+    .dark header { background: #252536; color: #fff; }
+    .dark main { background: #1e1e2e; }
+    .dark .table-container { background: #2a2a3d; color: #fff; }
+    .dark table th { background: #33334d; }
+    .dark button { background: #333; color: #fff; }
   </style>
 </head>
 <body>
-  <h2>📊 Data Akun User</h2>
-  <table id="userTable">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Username</th>
-        <th>Dibuat Pada</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
 
-  <script>
-    async function loadUsers() {
-      try {
-        const res = await fetch("/api/getUsers", {
-          headers: { Authorization: "supersecret123" }
-        });
-        const data = await res.json();
-        if (!data.success) throw new Error(data.message);
+<header>
+  <h1>👑 Admin Dashboard</h1>
+  <div class="right">
+    <span id="adminName">Admin</span>
+    <button onclick="toggleDark()">🌙</button>
+    <button onclick="logout()">Keluar</button>
+  </div>
+</header>
 
-        const tbody = document.querySelector("#userTable tbody");
-        tbody.innerHTML = "";
-        data.users.forEach((u, i) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${i + 1}</td>
-            <td>${u.username}</td>
-            <td>${new Date(u.created_at).toLocaleString()}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (err) {
-        alert("Gagal memuat data: " + err.message);
-      }
-    }
-    loadUsers();
-  </script>
+<main>
+  <div class="table-container">
+    <h2>📋 Data Akun User</h2>
+    <p id="lastUpdate" style="font-size:13px; color:#666;">Memuat data...</p>
+    <button onclick="loadUsers()">🔄 Refresh Data</button>
+    <table id="usersTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Username</th>
+          <th>Password (hash)</th>
+          <th>Dibuat pada</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  © 2025 Reseller Gaming Panel | Made with 💙
+</footer>
+
+<script>
+async function loadUsers() {
+  const tbody = document.querySelector("#usersTable tbody");
+  const last = document.getElementById("lastUpdate");
+  tbody.innerHTML = "<tr><td colspan='4'>⏳ Memuat...</td></tr>";
+  try {
+    const token = localStorage.getItem("admin_token");
+    if (!token) return (window.location.href = "/admin/login.html");
+
+    const res = await fetch("/api/getUsers", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Gagal ambil data");
+
+    tbody.innerHTML = "";
+    data.users.forEach((u, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${u.username}</td>
+        <td>${u.password}</td>
+        <td>${new Date(u.created_at).toLocaleString()}</td>`;
+      tbody.appendChild(tr);
+    });
+    last.textContent = "Terakhir diperbarui: " + new Date().toLocaleTimeString();
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="4" style="color:red;">❌ ${err.message}</td></tr>`;
+  }
+}
+
+function logout() {
+  localStorage.removeItem("admin_token");
+  window.location.href = "/admin/login.html";
+}
+
+function toggleDark() {
+  document.body.classList.toggle("dark");
+}
+
+window.onload = () => {
+  const token = localStorage.getItem("admin_token");
+  if (!token) window.location.href = "/admin/login.html";
+  document.getElementById("adminName").textContent = "ADMIN";
+  loadUsers();
+};
+</script>
+
 </body>
 </html>
