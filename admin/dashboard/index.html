@@ -160,7 +160,7 @@ function toggleDark() {
 
 window.onload = () => {
   const token = localStorage.getItem("admin_token");
-  if (!token) window.location.href = "/admin/login.html";
+  if (!token) window.location.href = "/admin/";
   document.getElementById("adminName").textContent = "ADMIN";
   loadUsers();
 };
