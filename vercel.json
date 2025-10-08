@@ -1,5 +1,16 @@
 {
   "version": 2,
+  "includeFiles": ["users.json"],
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "**/*.html",
+      "use": "@vercel/static"
+    }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
@@ -20,6 +31,14 @@
     {
       "src": "/user/reseller/(.*)",
       "dest": "/user/reseller/$1"
+    },
+    {
+      "src": "/admin/dashboard",
+      "dest": "/admin/dashboard/index.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/admin/$1"
     },
     {
       "src": "/",
