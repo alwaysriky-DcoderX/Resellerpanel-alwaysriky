@@ -214,7 +214,7 @@
     document.getElementById('battery').textContent = 'Tidak tersedia';
   }
 
-  // Fungsi load reseller dari API
+  // Fungsi load reseller dari API /api/getUsers
   async function loadResellers() {
     const tbody = document.querySelector("#resellerTable tbody");
     const last = document.getElementById("lastUpdate");
@@ -224,7 +224,7 @@
       const token = localStorage.getItem("admin_token");
       if (!token) return (window.location.href = "/admin/login.html");
 
-      const res = await fetch("/api/getResellers", {
+      const res = await fetch("/api/getUsers", {
         headers: { Authorization: "Bearer " + token }
       });
 
@@ -232,7 +232,7 @@
       if (!res.ok) throw new Error(data.message || "Gagal ambil data reseller");
 
       tbody.innerHTML = "";
-      data.resellers.forEach((u, i) => {
+      data.users.forEach((u, i) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${i + 1}</td>
