@@ -1,170 +1,263 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard | Panel Reseller</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel</title>
   <style>
-    * { box-sizing: border-box; transition: 0.2s; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      color: #222;
-      min-height: 100vh;
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #222;
+      --primary: #007bff;
+      --sidebar: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.08);
+    }
+    body.dark {
+      --bg: #1e1e2e;
+      --card: #2a2a3d;
+      --text: #eee;
+      --sidebar: #252536;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+    * { box-sizing: border-box; transition: background-color .3s, color .3s; }
+    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+    aside {
+      width: 250px;
+      background: var(--sidebar);
+      box-shadow: 2px 0 10px var(--shadow);
       display: flex;
       flex-direction: column;
-    }
-    header {
-      background: #007bff;
-      color: white;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    header h1 { font-size: 20px; margin: 0; }
-    header .right {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    button {
-      background: #fff;
-      border: none;
-      color: #007bff;
-      padding: 8px 15px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    button:hover { background: #e8f0ff; }
-    main {
-      flex: 1;
-      padding: 30px;
-      animation: fadeIn 0.5s ease;
-    }
-    @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:none;} }
-    .table-container {
-      background: white;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      overflow-x: auto;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      z-index: 999;
+      transform: translateX(-100%);
+      transition: transform .3s ease;
     }
-    table {
+    aside.show { transform: translateX(0); }
+    aside h2 { font-size: 20px; margin-bottom: 30px; }
+    nav button {
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
       text-align: left;
+      background: transparent;
+      border: none;
       padding: 12px;
-      border-bottom: 1px solid #eee;
+      margin-bottom: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
     }
-    th { background: #f9fafc; font-weight: 600; }
-    tr:hover { background: #f4f8ff; }
-    footer {
-      text-align: center;
-      padding: 15px;
-      font-size: 14px;
-      color: #888;
-    }
-    .dark {
-      background: #1e1e2e;
-      color: #eee;
-    }
-    .dark header { background: #252536; color: #fff; }
-    .dark main { background: #1e1e2e; }
-    .dark .table-container { background: #2a2a3d; color: #fff; }
-    .dark table th { background: #33334d; }
-    .dark button { background: #333; color: #fff; }
+    nav button:hover, nav button.active { background: var(--primary); color: white; }
+    main { flex: 1; padding: 30px; overflow-y: auto; margin-left: 0; transition: margin-left .3s ease; }
+    .page { display: none; animation: fadeIn .4s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px var(--shadow); margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+    .stat { font-size: 18px; margin: 8px 0; }
+    .stat strong { color: var(--primary); }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .toggle-dark { background: transparent; border: 1px solid var(--text); color: var(--text); padding: 6px 12px; cursor: pointer; border-radius: 6px; }
+    .hamburger { font-size: 24px; background: none; border: none; color: var(--text); cursor: pointer; margin-right: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+    input, select, button[type=submit] { width: 100%; padding: 10px; margin: 8px 0; border-radius: 8px; border: 1px solid #ccc; }
+    button[type=submit] { background: var(--primary); color: #fff; border: none; cursor: pointer; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>👑 Admin Dashboard</h1>
-  <div class="right">
-    <span id="adminName">Admin</span>
-    <button onclick="toggleDark()">🌙</button>
-    <button onclick="logout()">Keluar</button>
-  </div>
-</header>
+<aside id="sidebar">
+  <h2>Admin Panel</h2>
+  <nav>
+    <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+    <button class="nav-btn" data-page="server">🖥 Server</button>
+    <button class="nav-btn" data-page="reseller">👤 Reseller</button>
+    <button class="nav-btn" data-page="create">➕ Create User</button>
+    <button class="nav-btn" data-page="createpanel">🧩 Create Panel</button>
+  </nav>
+</aside>
 
-<main>
-  <div class="table-container">
-    <h2>📋 Data Akun User</h2>
-    <p id="lastUpdate" style="font-size:13px; color:#666;">Memuat data...</p>
-    <button onclick="loadUsers()">🔄 Refresh Data</button>
-    <table id="usersTable">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Username</th>
-          <th>Password (hash)</th>
-          <th>Dibuat pada</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+<main id="main">
+  <div class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <h1 id="pageTitle">Dashboard</h1>
+    <button class="toggle-dark" onclick="toggleDark()">🌙 Dark</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="page active" id="dashboard">
+    <div class="card">
+      <h3>📊 Informasi Sistem</h3>
+      <div class="grid">
+        <div class="stat">🕒 <strong>Jam:</strong> <span id="clock">--:--:--</span></div>
+        <div class="stat">🌐 <strong>IP:</strong> <span id="ip">Memuat...</span></div>
+        <div class="stat">🔋 <strong>Baterai:</strong> <span id="battery">Tidak tersedia</span></div>
+        <div class="stat">👥 <strong>Total User:</strong> <span id="totalUsers">42</span></div>
+        <div class="stat">🖥 <strong>Total Server:</strong> <span id="totalServers">5</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Server -->
+  <div class="page" id="server">
+    <div class="card">
+      <h3>Daftar Server</h3>
+      <table>
+        <thead><tr><th>#</th><th>Nama Server</th><th>Lokasi</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Server A</td><td>Jakarta</td><td>🟢 Aktif</td></tr>
+          <tr><td>2</td><td>Server B</td><td>Surabaya</td><td>🟢 Aktif</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Reseller -->
+  <div class="page" id="reseller">
+    <div class="card">
+      <h3>Daftar Reseller</h3>
+      <button onclick="loadResellers()" style="margin-bottom:10px;padding:8px 14px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer;">🔄 Refresh</button>
+      <input type="text" id="searchReseller" placeholder="🔍 Cari reseller berdasarkan username..." style="width:100%;padding:10px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;" onkeyup="filterReseller()">
+      <table id="resellerTable">
+        <thead><tr><th>#</th><th>Username</th><th>Password</th><th>Dibuat</th></tr></thead>
+        <tbody><tr><td colspan="4">⏳ Memuat data reseller...</td></tr></tbody>
+      </table>
+      <p id="lastUpdate" style="font-size:12px;color:#888;margin-top:10px;">Terakhir diperbarui: -</p>
+    </div>
+  </div>
+
+  <!-- Create User -->
+  <div class="page" id="create">
+    <div class="card">
+      <h3>Buat User Baru</h3>
+      <form onsubmit="event.preventDefault(); alert('User berhasil dibuat!');">
+        <input type="text" placeholder="Username" required />
+        <input type="password" placeholder="Password" required />
+        <button type="submit">Buat User</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Panel -->
+  <div class="page" id="createpanel">
+    <div class="card">
+      <h3>Buat Panel Baru</h3>
+      <form onsubmit="event.preventDefault(); alert('Panel berhasil dibuat!');">
+        <input type="text" placeholder="Nama Panel" required />
+        <select required>
+          <option value="">Pilih Tipe</option>
+          <option>Game</option>
+          <option>VPN</option>
+        </select>
+        <button type="submit">Buat Panel</button>
+      </form>
+    </div>
   </div>
 </main>
 
-<footer>
-  © 2025 Reseller Gaming Panel | Made with 💙
-</footer>
-
 <script>
-async function loadUsers() {
-  const tbody = document.querySelector("#usersTable tbody");
-  const last = document.getElementById("lastUpdate");
-  tbody.innerHTML = "<tr><td colspan='4'>⏳ Memuat...</td></tr>";
-  try {
-    const token = localStorage.getItem("admin_token");
-    if (!token) return (window.location.href = "/admin/login.html");
+  const buttons = document.querySelectorAll('.nav-btn');
+  const pages = document.querySelectorAll('.page');
+  const pageTitle = document.getElementById('pageTitle');
+  const sidebar = document.getElementById('sidebar');
 
-    const res = await fetch("/api/getUsers", {
-      headers: { Authorization: "Bearer " + token }
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-page');
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      pages.forEach(p => p.classList.remove('active'));
+      document.getElementById(target).classList.add('active');
+      pageTitle.textContent = btn.textContent.slice(2);
+      sidebar.classList.remove('show');
+
+      // Auto-load reseller saat masuk halaman reseller
+      if (target === 'reseller') loadResellers();
     });
+  });
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Gagal ambil data");
+  function toggleDark() { document.body.classList.toggle('dark'); }
+  function toggleSidebar() { sidebar.classList.toggle('show'); }
 
-    tbody.innerHTML = "";
-    data.users.forEach((u, i) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${i + 1}</td>
-        <td>${u.username}</td>
-        <td>${u.password}</td>
-        <td>${new Date(u.created_at).toLocaleString()}</td>`;
-      tbody.appendChild(tr);
-    });
-    last.textContent = "Terakhir diperbarui: " + new Date().toLocaleTimeString();
-  } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="4" style="color:red;">❌ ${err.message}</td></tr>`;
+  // Jam real-time
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString('id-ID');
   }
-}
+  setInterval(updateClock, 1000);
+  updateClock();
 
-function logout() {
-  localStorage.removeItem("admin_token");
-  window.location.href = "/admin/";
-}
+  // IP Publik
+  fetch('https://api.ipify.org?format=json')
+    .then(res => res.json())
+    .then(data => document.getElementById('ip').textContent = data.ip)
+    .catch(() => document.getElementById('ip').textContent = 'Gagal memuat IP');
 
-function toggleDark() {
-  document.body.classList.toggle("dark");
-}
+  // Baterai
+  if ('getBattery' in navigator) {
+    navigator.getBattery().then(battery => {
+      function updateBattery() {
+        const level = Math.round(battery.level * 100);
+        const charging = battery.charging ? '🔌 Charging' : '🔋 Baterai';
+        document.getElementById('battery').textContent = `${charging}: ${level}%`;
+      }
+      updateBattery();
+      battery.addEventListener('levelchange', updateBattery);
+      battery.addEventListener('chargingchange', updateBattery);
+    });
+  } else {
+    document.getElementById('battery').textContent = 'Tidak tersedia';
+  }
 
-window.onload = () => {
-  const token = localStorage.getItem("admin_token");
-  if (!token) window.location.href = "/admin/";
-  document.getElementById("adminName").textContent = "ADMIN";
-  loadUsers();
-};
+  // Fungsi load reseller dari API
+  async function loadResellers() {
+    const tbody = document.querySelector("#resellerTable tbody");
+    const last = document.getElementById("lastUpdate");
+    tbody.innerHTML = "<tr><td colspan='4'>⏳ Memuat...</td></tr>";
+
+    try {
+      const token = localStorage.getItem("admin_token");
+      if (!token) return (window.location.href = "/admin/login.html");
+
+      const res = await fetch("/api/getResellers", {
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Gagal ambil data reseller");
+
+      tbody.innerHTML = "";
+      data.resellers.forEach((u, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${u.username}</td>
+          <td>${u.password}</td>
+          <td>${new Date(u.created_at).toLocaleString()}</td>`;
+        tbody.appendChild(tr);
+      });
+      last.textContent = "Terakhir diperbarui: " + new Date().toLocaleTimeString();
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="4" style="color:red;">❌ ${err.message}</td></tr>`;
+    }
+  }
+
+  // Fungsi filter pencarian reseller
+  function filterReseller() {
+    const input = document.getElementById("searchReseller").value.toLowerCase();
+    const rows = document.querySelectorAll("#resellerTable tbody tr");
+
+    rows.forEach(row => {
+      const username = row.cells[1]?.textContent.toLowerCase();
+      row.style.display = username && username.includes(input) ? "" : "none";
+    });
+  }
 </script>
 
 </body>
-</html>
+  </html>
