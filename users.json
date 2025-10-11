@@ -28,5 +28,10 @@
     "username": "wotasi",
     "password": "$2a$10$zJn0q61w.rk0OpG5HYKvgurFp8JUJQjg4gaBI7y082CnHwsHlYThS",
     "created_at": "2025-10-11T00:05:19.046Z"
+  },
+  {
+    "username": "freya",
+    "password": "$2a$10$jWmExZbDQYWoy8pJ9.NaROeJ1E0vJrY2oPtPFn8akETGDkZkDWc9i",
+    "created_at": "2025-10-11T00:05:53.448Z"
   }
 ]
