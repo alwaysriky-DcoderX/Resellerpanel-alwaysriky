@@ -123,7 +123,7 @@
       <button onclick="loadResellers()" style="margin-bottom:10px;padding:8px 14px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer;">🔄 Refresh</button>
       <input type="text" id="searchReseller" placeholder="🔍 Cari reseller berdasarkan username..." style="width:100%;padding:10px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;" onkeyup="filterReseller()">
       <table id="resellerTable">
-        <thead><tr><th>#</th><th>Username</th><th>Password</th><th>Dibuat</th></tr></thead>
+        <thead><tr><th>#</th><th>Username</th><th>Password</th><th>Dibuat</th><th>Aksi</th></tr></thead>
         <tbody><tr><td colspan="4">⏳ Memuat data reseller...</td></tr></tbody>
       </table>
       <p id="lastUpdate" style="font-size:12px;color:#888;margin-top:10px;">Terakhir diperbarui: -</p>
@@ -236,7 +236,10 @@
           <td>${i + 1}</td>
           <td>${u.username}</td>
           <td>${u.password}</td>
-          <td>${new Date(u.created_at).toLocaleString()}</td>`;
+          <td>${new Date(u.created_at).toLocaleString()}</td>
+          <td>
+‎    <button onclick="deleteUser('${u.username}')" style="background:#e74c3c;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Hapus</button>
+‎  </td>`;
         tbody.appendChild(tr);
       });
       last.textContent = "Terakhir diperbarui: " + new Date().toLocaleTimeString();
@@ -286,7 +289,64 @@
     alert('❌ Terjadi kesalahan: ' + err.message);
   }
   }
-</script>
 
+  // delete 
+  async function deleteUser(username) {
+  if (!confirm(`Yakin ingin menghapus user "${username}"?`)) return;
+
+  try {
+    const token = localStorage.getItem("admin_token");
+    if (!token) return (window.location.href = "/admin/login.html");
+
+    const res = await fetch("/api/deleteUser", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ username })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert("✅ User berhasil dihapus");
+      loadResellers(); // reload tabel
+    } else {
+      alert("❌ " + (data.error || "Gagal menghapus user"));
+    }
+  } catch (err) {
+    alert("❌ Terjadi kesalahan: " + err.message);
+  }
+  }
+
+  // delete 
+  async function deleteUser(username) {
+  if (!confirm(`Yakin ingin menghapus user "${username}"?`)) return;
+
+  try {
+    const token = localStorage.getItem("admin_token");
+    if (!token) return (window.location.href = "/admin/login.html");
+
+    const res = await fetch("/api/deleteUser", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ username })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert("✅ User berhasil dihapus");
+      loadResellers(); // reload tabel
+    } else {
+      alert("❌ " + (data.error || "Gagal menghapus user"));
+    }
+  } catch (err) {
+    alert("❌ Terjadi kesalahan: " + err.message);
+  }
+  }
+</script>
 </body>
   </html>
