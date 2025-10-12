@@ -293,6 +293,75 @@
   color: #ff9800;
 }
   </style>
+  <style>
+/* ===== CLEAR SERVER STYLE ===== */
+#clearserver .card {
+  background: #1e1e1e;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.25);
+  border-radius: 15px;
+  padding: 40px 30px;
+}
+#clearserver h2 {
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+#clearserver .warning-box {
+  background: rgba(255, 152, 0, 0.15);
+  border: 1px solid #ff9800;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 25px;
+  font-size: 14px;
+  color: #ff9800;
+}
+#clearserver button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #dc3545;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .3s;
+}
+#clearserver button:hover {
+  background: #c82333;
+}
+#clearserver .loading {
+  display: none;
+  text-align: center;
+  margin-top: 20px;
+}
+#clearserver .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ffffff33;
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+#clearserver .result {
+  margin-top: 25px;
+  padding: 15px;
+  border-radius: 8px;
+  display: none;
+  font-weight: 600;
+}
+#clearserver .success {
+  background: var(--success);
+  color: #fff;
+}
+#clearserver .error {
+  background: var(--danger);
+  color: #fff;
+}
+  </style>
 </head>
 <body>
 
@@ -492,6 +561,31 @@
       <div class="note">Note: Jangan rusuh anjing kalo make adp</div>
       <button onclick="resetAdminForm()" style="margin-top:15px;">Buat Lagi</button>
     </div>
+  </div>
+</div>
+
+<!-- ===== CLEAR SERVER ===== -->
+<div class="page" id="clearserver">
+  <div class="card" style="max-width:480px;margin:0 auto;text-align:center;">
+    <h2>Clear Server</h2>
+
+    <!-- WARNING -->
+    <div class="warning-box">
+      ⚠️ <strong>WARNING</strong> ⚠️<br>
+      Sebelum clear all server / membersihkan semua server harap pikir kembali dan ini hanya membersihkan server bukan dengan user, sekian terima ☺️
+    </div>
+
+    <!-- TOMBOL CLEAR -->
+    <button onclick="clearServer()">Clear Server</button>
+
+    <!-- LOADING -->
+    <div class="loading" id="loadingClear">
+      <div class="spinner"></div>
+      <p>Menghapus server, harap tunggu...</p>
+    </div>
+
+    <!-- HASIL -->
+    <div class="result" id="resultClear"></div>
   </div>
 </div>
 </main>
@@ -884,6 +978,46 @@ function resetAdminForm() {
   document.getElementById('loadingAdmin').style.display = 'none';
   document.getElementById('adminUser').value = '';
   document.getElementById('adminTele').value = '';
+  }
+
+  
+/* ===== FUNGSI CLEAR SERVER ===== */
+async function clearServer() {
+  const loading = document.getElementById('loadingClear');
+  const result  = document.getElementById('resultClear');
+
+  // konfirmasi ulang
+  if (!confirm('Yakin ingin menghapus SEMUA server? Tindakan ini tidak dapat dibatalkan.')) return;
+
+  loading.style.display = 'block';
+  result.style.display  = 'none';
+
+  const url = `https://api.nvidiabotz.xyz/pterodactyl/clearserver?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
+
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      showResult('success', '✅ Semua server berhasil dibersihkan!');
+      // opsional: reload data server
+      setTimeout(() => countServers(), 1500);
+    } else {
+      showResult('error', data.message || 'Gagal membersihkan server.');
+    }
+  } catch (err) {
+    showResult('error', 'Terjadi kesalahan jaringan / API tidak tersedia.');
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+/* ===== TAMPILKAN HASIL ===== */
+function showResult(type, msg) {
+  const result = document.getElementById('resultClear');
+  result.className = 'result ' + type;
+  result.textContent = msg;
+  result.style.display = 'block';
   }
   
 /* ========== EVENT LISTENER ========== */
