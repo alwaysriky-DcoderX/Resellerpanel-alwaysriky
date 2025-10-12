@@ -672,6 +672,55 @@ function gotoPage(pageId) {
   document.getElementById(pageId).classList.add('active');
   pageTitle.textContent = document.querySelector(`[data-page="${pageId}"]`).textContent.slice(2);
   }
+
+  /* ===== VARIABEL GLOBAL ===== */
+let userCount   = 0;
+let serverCount = 0;
+
+/* ===== FUNGSI UPDATE GRAFIK ===== */
+function updateChart() {
+  const max       = Math.max(userCount, serverCount, 1);
+  const userPct   = (userCount / max) * 100;
+  const serverPct = (serverCount / max) * 100;
+
+  document.querySelector('.bar[data-label="User"]').style.height   = userPct + '%';
+  document.querySelector('.bar[data-label="Server"]').style.height = serverPct + '%';
+}
+
+/* ===== AMBIL JUMLAH USER (dari API atau users.json) ===== */
+async function countUsers() {
+  try {
+    const token = localStorage.getItem("admin_token");
+    const res   = await fetch("/api/users", { headers: { Authorization: "Bearer " + token } });
+    const data  = await res.json();
+    userCount   = data.users.length; // ← jumlah user
+  } catch {
+    userCount = 0;
+  }
+  updateChart(); // update grafik
+}
+
+/* ===== AMBIL JUMLAH SERVER (dari API lambat) ===== */
+async function countServers() {
+  const DOMAIN = "https://www.freezeehost.my.id"; // ganti
+  const PLTA   = "ptla_br6bgXHZ9wQD9BJoIAPwVqxUbiEku9hWupUORHyL3BO"; // ganti
+  const url    = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
+
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    serverCount = j.status ? j.servers.length : 0;
+  } catch {
+    serverCount = 0;
+  }
+  updateChart(); // update grafik
+}
+
+/* ===== PANGGIL SAAT HALAMAN DASHBOARD DIBUKA ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  countUsers();
+  countServers(); // boleh parallel
+});
   
 /* ========== EVENT LISTENER ========== */
 document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
