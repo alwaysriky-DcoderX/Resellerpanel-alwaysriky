@@ -69,6 +69,18 @@
     input, select, button[type=submit] { width: 100%; padding: 10px; margin: 8px 0; border-radius: 8px; border: 1px solid #ccc; }
     button[type=submit] { background: var(--primary); color: #fff; border: none; cursor: pointer; }
   </style>
+  <style>
+.spinner{
+  border:4px solid #f3f3f3;
+  border-top:4px solid #007bff;
+  border-radius:50%;
+  width:30px;
+  height:30px;
+  animation:spin 1s linear infinite;
+  margin:10px auto 0;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+  </style>
 </head>
 <body>
 
@@ -104,16 +116,22 @@
     </div>
   </div>
 
-  <!-- Server -->
+  <!-- SERVER -->
 <div class="page" id="server">
   <div class="card">
-    <h3>Daftar Server (dari API)</h3>
-    <table>
+    <h3>Daftar Server (API)</h3>
+    <button onclick="loadServers()" style="margin-bottom:12px">🔄 Refresh</button>
+    <table style="width:100%;border-collapse:collapse">
       <thead>
-        <tr><th>#</th><th>Nama Server</th><th>Identifier</th><th>Owner ID</th></tr>
+        <tr>
+          <th style="padding:8px;border-bottom:1px solid #ccc">#</th>
+          <th style="padding:8px;border-bottom:1px solid #ccc">Nama</th>
+          <th style="padding:8px;border-bottom:1px solid #ccc">Identifier</th>
+          <th style="padding:8px;border-bottom:1px solid #ccc">Owner</th>
+        </tr>
       </thead>
       <tbody id="serverTableBody">
-        <tr><td colspan="4">⏳ Memuat server...</td></tr>
+        <tr><td colspan="4" style="text-align:center;padding:20px">⏳ Memuat server...</td></tr>
       </tbody>
     </table>
   </div>
@@ -353,30 +371,44 @@
 
   
   // Fungsi load server dari API
-  async function loadServers() {
-    const tbody = document.getElementById('serverTableBody');
-    const { domain, plta } = window.SETTINGS;
-    const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(domain)}&plta=${plta}`;
+  async function loadServers(){
+  const tbody = document.getElementById('serverTableBody');
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="4" style="text-align:center;padding:20px">
+        <div>⏳ Memuat server...</div>
+        <small>Estimasi 30-90 detik</small>
+        <div class="spinner"></div>
+      </td>
+    </tr>`;
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
+  const { domain, plta } = window.SETTINGS;
+  const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(domain)}&plta=${plta}`;
 
-      if (!data.status) throw new Error(data.message || 'Gagal ambil server');
+  // Fetch dengan timeout 120 detit
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 120_000);
 
-      tbody.innerHTML = '';
-      data.servers.forEach((srv, i) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${i + 1}</td>
-          <td>${srv.name}</td>
-          <td>${srv.identifier}</td>
-          <td>${srv.owner_id}</td>`;
-        tbody.appendChild(tr);
-      });
-    } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="4" style="color:red;">❌ ${err.message}</td></tr>`;
-    }
+  try{
+    const r = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    const j = await r.json();
+
+    if(!j.status) throw new Error(j.message || 'API gagal');
+
+    tbody.innerHTML = '';
+    j.servers.forEach((s, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="padding:8px">${i + 1}</td>
+        <td style="padding:8px">${s.name}</td>
+        <td style="padding:8px">${s.identifier}</td>
+        <td style="padding:8px">${s.owner_id}</td>`;
+      tbody.appendChild(tr);
+  }catch(err){
+    let msg = err.name === 'AbortError' ? '⏱ Request timeout (120 detik)' : err.message;
+    tbody.innerHTML = `<tr><td colspan="4" style="color:red;text-align:center;padding:20px">❌ ${msg}</td></tr>`;
+  }
   }
 
   // Panggil saat halaman server dibuka
