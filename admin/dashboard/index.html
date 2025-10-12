@@ -4,7 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel</title>
-  <script src="setting.js"></script>
   <style>
     :root {
       --bg: #f4f6f8;
@@ -177,212 +176,199 @@
 </main>
 
 <script>
-  const buttons = document.querySelectorAll('.nav-btn');
-  const pages = document.querySelectorAll('.page');
-  const pageTitle = document.getElementById('pageTitle');
-  const sidebar = document.getElementById('sidebar');
+/* ========== CONFIG (TANPA setting.js) ========== */
+const DOMAIN = "https://www.freezeehost.my.id"; // ganti dengan domain Anda
+const PLTA   = "ptla_br6bgXHZ9wQD9BJoIAPwVqxUbiEku9hWupUORHyL3BO"; // ganti dengan plta Anda
 
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.getAttribute('data-page');
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+/* ========== NAVIGASI ========== */
+const buttons = document.querySelectorAll('.nav-btn');
+const pages   = document.querySelectorAll('.page');
+const pageTitle = document.getElementById('pageTitle');
+const sidebar = document.getElementById('sidebar');
 
-      pages.forEach(p => p.classList.remove('active'));
-      document.getElementById(target).classList.add('active');
-      pageTitle.textContent = btn.textContent.slice(2);
-      sidebar.classList.remove('show');
-
-      if (target === 'reseller') loadResellers();
-    });
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.getAttribute('data-page');
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    pages.forEach(p => p.classList.remove('active'));
+    document.getElementById(target).classList.add('active');
+    pageTitle.textContent = btn.textContent.slice(2);
+    sidebar.classList.remove('show');
+    if (target === 'reseller') loadResellers();
   });
+});
 
-  function toggleDark() { document.body.classList.toggle('dark'); }
-  function toggleSidebar() { sidebar.classList.toggle('show'); }
+function toggleDark() { document.body.classList.toggle('dark'); }
+function toggleSidebar() { sidebar.classList.toggle('show'); }
 
-  // Jam real-time
-  function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleTimeString('id-ID');
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
+/* ========== DASHBOARD ========== */
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('id-ID');
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-  // IP Publik
-  fetch('https://api.ipify.org?format=json')
-    .then(res => res.json())
-    .then(data => document.getElementById('ip').textContent = data.ip)
-    .catch(() => document.getElementById('ip').textContent = 'Gagal memuat IP');
+fetch('https://api.ipify.org?format=json')
+  .then(res => res.json())
+  .then(data => document.getElementById('ip').textContent = data.ip)
+  .catch(() => document.getElementById('ip').textContent = 'Gagal memuat IP');
 
-  // Baterai
-  if ('getBattery' in navigator) {
-    navigator.getBattery().then(battery => {
-      function updateBattery() {
-        const level = Math.round(battery.level * 100);
-        const charging = battery.charging ? '🔌 Charging' : '🔋 Baterai';
-        document.getElementById('battery').textContent = `${charging}: ${level}%`;
-      }
-      updateBattery();
-      battery.addEventListener('levelchange', updateBattery);
-      battery.addEventListener('chargingchange', updateBattery);
+if ('getBattery' in navigator) {
+  navigator.getBattery().then(battery => {
+    function updateBattery() {
+      const level = Math.round(battery.level * 100);
+      const charging = battery.charging ? '🔌 Charging' : '🔋 Baterai';
+      document.getElementById('battery').textContent = `${charging}: ${level}%`;
+    }
+    updateBattery();
+    battery.addEventListener('levelchange', updateBattery);
+    battery.addEventListener('chargingchange', updateBattery);
+  });
+} else {
+  document.getElementById('battery').textContent = 'Tidak tersedia';
+}
+
+/* ========== SERVER (API LAMBAT) ========== */
+async function loadServers() {
+  const tbody = document.getElementById('serverTableBody');
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="4" style="text-align:center;padding:20px">
+        <div>⏳ Memuat server...</div>
+        <small>Estimasi 30-90 detik</small>
+        <div class="spinner"></div>
+      </td>
+    </tr>`;
+
+  const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 120_000);
+
+  try {
+    const r = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    const j = await r.json();
+
+    if (!j.status) throw new Error(j.message || 'API gagal');
+
+    tbody.innerHTML = '';
+    j.servers.forEach((s, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="padding:8px">${i + 1}</td>
+        <td style="padding:8px">${s.name}</td>
+        <td style="padding:8px">${s.identifier}</td>
+        <td style="padding:8px">${s.owner_id}</td>`;
+      tbody.appendChild(tr);
     });
-  } else {
-    document.getElementById('battery').textContent = 'Tidak tersedia';
+
+  } catch (err) {
+    let msg = err.name === 'AbortError' ? '⏱ Request timeout (120 detik)' : err.message;
+    tbody.innerHTML = `<tr><td colspan="4" style="color:red;text-align:center;padding:20px">❌ ${msg}</td></tr>`;
   }
+}
 
-  // Fungsi load reseller dari API /api/getUsers
-  async function loadResellers() {
-    const tbody = document.querySelector("#resellerTable tbody");
-    const last = document.getElementById("lastUpdate");
-    tbody.innerHTML = "<tr><td colspan='4'>⏳ Memuat...</td></tr>";
+/* ========== RESELLER ========== */
+async function loadResellers() {
+  const tbody = document.querySelector("#resellerTable tbody");
+  const last = document.getElementById("lastUpdate");
+  tbody.innerHTML = "<tr><td colspan='4'>⏳ Memuat...</td></tr>";
 
-    try {
-      const token = localStorage.getItem("admin_token");
-      if (!token) return (window.location.href = "/admin/login.html");
+  try {
+    const token = localStorage.getItem("admin_token");
+    if (!token) return (window.location.href = "/admin/login.html");
 
-      const res = await fetch("/api/getUsers", {
-        headers: { Authorization: "Bearer " + token }
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Gagal ambil data reseller");
-
-      tbody.innerHTML = "";
-      data.users.forEach((u, i) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${i + 1}</td>
-          <td>${u.username}</td>
-          <td>${u.password}</td>
-          <td>${new Date(u.created_at).toLocaleString()}</td>
-          <td>
-            <button onclick="deleteUser('${u.username}')" style="background:#e74c3c;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Hapus</button>
-          </td>`;
-        tbody.appendChild(tr);
-      });
-      last.textContent = "Terakhir diperbarui: " + new Date().toLocaleTimeString();
-    } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="4" style="color:red;">❌ ${err.message}</td></tr>`;
-    }
-  }
-
-  // Fungsi filter pencarian reseller
-  function filterReseller() {
-    const input = document.getElementById("searchReseller").value.toLowerCase();
-    const rows = document.querySelectorAll("#resellerTable tbody tr");
-
-    rows.forEach(row => {
-      const username = row.cells[1]?.textContent.toLowerCase();
-      row.style.display = username && username.includes(input) ? "" : "none";
+    const res = await fetch("/api/getUsers", {
+      headers: { Authorization: "Bearer " + token }
     });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Gagal ambil data reseller");
+
+    tbody.innerHTML = "";
+    data.users.forEach((u, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${u.username}</td>
+        <td>${u.password}</td>
+        <td>${new Date(u.created_at).toLocaleString()}</td>
+        <td>
+          <button onclick="deleteUser('${u.username}')" style="background:#e74c3c;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Hapus</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+    last.textContent = "Terakhir diperbarui: " + new Date().toLocaleTimeString();
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="4" style="color:red;">❌ ${err.message}</td></tr>`;
   }
+}
 
-  // create akun 
-  async function registerUser() {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
+function filterReseller() {
+  const input = document.getElementById("searchReseller").value.toLowerCase();
+  const rows = document.querySelectorAll("#resellerTable tbody tr");
+  rows.forEach(row => {
+    const username = row.cells[1]?.textContent.toLowerCase();
+    row.style.display = username && username.includes(input) ? "" : "none";
+  });
+}
 
-    if (!username || !password) {
-      alert('❌ Username dan Password wajib diisi!');
-      return;
+/* ========== CREATE USER ========== */
+async function registerUser() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  if (!username || !password) return alert('❌ Username dan Password wajib diisi!');
+
+  try {
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert('✅ User berhasil dibuat!');
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    } else {
+      alert('❌ ' + (data.error || 'Gagal membuat user'));
     }
-
-    try {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert('✅ User berhasil dibuat!');
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-      } else {
-        alert('❌ ' + (data.error || 'Gagal membuat user'));
-      }
-    } catch (err) {
-      alert('❌ Terjadi kesalahan: ' + err.message);
-    }
+  } catch (err) {
+    alert('❌ Terjadi kesalahan: ' + err.message);
   }
+}
 
-  // delete 
-  async function deleteUser(username) {
-    if (!confirm(`Yakin ingin menghapus user "${username}"?`)) return;
+/* ========== DELETE USER ========== */
+async function deleteUser(username) {
+  if (!confirm(`Yakin ingin menghapus user "${username}"?`)) return;
+  try {
+    const token = localStorage.getItem("admin_token");
+    if (!token) return (window.location.href = "/admin/login.html");
 
-    try {
-      const token = localStorage.getItem("admin_token");
-      if (!token) return (window.location.href = "/admin/login.html");
-
-      const res = await fetch("/api/deleteUser", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token
-        },
-        body: JSON.stringify({ username })
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        alert("✅ User berhasil dihapus");
-        loadResellers(); // reload tabel
-      } else {
-        alert("❌ " + (data.error || "Gagal menghapus user"));
-      }
-    } catch (err) {
-      alert("❌ Terjadi kesalahan: " + err.message);
+    const res = await fetch("/api/deleteUser", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert("✅ User berhasil dihapus");
+      loadResellers();
+    } else {
+      alert("❌ " + (data.error || "Gagal menghapus user"));
     }
+  } catch (err) {
+    alert("❌ Terjadi kesalahan: " + err.message);
   }
+}
 
-  // Fungsi load server dari API
-  async function loadServers(){
-    const tbody = document.getElementById('serverTableBody');
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="4" style="text-align:center;padding:20px">
-          <div>⏳ Memuat server...</div>
-          <small>Estimasi 30-90 detik</small>
-          <div class="spinner"></div>
-        </td>
-      </tr>`;
-
-    const { domain, plta } = window.SETTINGS;
-    const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(domain)}&plta=${plta}`;
-
-    // Fetch dengan timeout 120 detik
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120_000);
-
-    try{
-      const r = await fetch(url, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      const j = await r.json();
-
-      if(!j.status) throw new Error(j.message || 'API gagal');
-
-      tbody.innerHTML = '';
-      j.servers.forEach((s, i) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="padding:8px">${i + 1}</td>
-          <td style="padding:8px">${s.name}</td>
-          <td style="padding:8px">${s.identifier}</td>
-          <td style="padding:8px">${s.owner_id}</td>`;
-        tbody.appendChild(tr);
-      }); // ✅ Kurung tutup ini sudah benar
-
-    } catch(err){
-      let msg = err.name === 'AbortError' ? '⏱ Request timeout (120 detik)' : err.message;
-      tbody.innerHTML = `<tr><td colspan="4" style="color:red;text-align:center;padding:20px">❌ ${msg}</td></tr>`;
-    }
-  }
-
-  // Panggil saat halaman server dibuka
-  document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
-
+/* ========== EVENT LISTENER ========== */
+document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
 </script>
 </body>
-  </html>
+</html>
