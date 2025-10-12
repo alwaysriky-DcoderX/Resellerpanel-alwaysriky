@@ -719,7 +719,7 @@ async function countUsers() {
 
 /* ===== AMBIL JUMLAH SERVER ===== */
 async function countServers() {
-  const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN_PANEL)}&plta=${PLTA}`;
+  const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
 
   try {
     const r = await fetch(url);
