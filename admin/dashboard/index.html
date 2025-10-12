@@ -78,6 +78,54 @@
     }
     @keyframes spin{to{transform:rotate(360deg);}}
   </style>
+  <style>
+/* ===== CREATE PANEL STYLE ===== */
+#createpanel .card {
+  text-align: center;
+}
+#createpanel label {
+  text-align: left;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #333;
+}
+#createpanel input,
+#createpanel select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 18px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+}
+#createpanel button {
+  width: 100%;
+  padding: 12px;
+  background: #0052cc;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+#createpanel button:hover {
+  background: #003d99;
+}
+#createpanel .hidden {
+  display: none;
+}
+#createpanel .success-box {
+  text-align: left;
+  background: #f0f8ff;
+  border: 1px solid #0052cc;
+  border-radius: 8px;
+  padding: 15px;
+  font-size: 14px;
+  color: #003d99;
+  margin-bottom: 20px;
+}
+  </style>
 </head>
 <body>
 
@@ -158,23 +206,57 @@
     </div>
   </div>
 
-  <!-- Create Panel -->
-  <div class="page" id="createpanel">
-    <div class="card">
-      <h3>Buat Panel Baru</h3>
-      <form onsubmit="event.preventDefault(); alert('Panel berhasil dibuat!');">
-        <input type="text" placeholder="Nama Panel" required />
-        <select required>
-          <option value="">Pilih Tipe</option>
-          <option>Game</option>
-          <option>VPN</option>
-        </select>
-        <button type="submit">Buat Panel</button>
-      </form>
+
+  
+<!-- ========== CREATE PANEL ========== -->
+<div class="page" id="createpanel">
+  <div class="card" style="max-width:420px;margin:0 auto;">
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" style="width:60px;margin-bottom:20px;">
+    <h2>Buat Panel Baru</h2>
+    <p class="sub">Isi username, pilih paket RAM & masukkan ID Telegram</p>
+
+    <!-- STEP 1 -->
+    <div id="step1">
+      <label>Username</label>
+      <input type="text" id="panelUsername" placeholder="Masukkan username">
+
+      <label>Paket RAM</label>
+      <select id="paket">
+        <option value="">-- Pilih Paket --</option>
+        <option value="1gb">1GB</option>
+        <option value="2gb">2GB</option>
+        <option value="3gb">3GB</option>
+        <option value="4gb">4GB</option>
+        <option value="5gb">5GB</option>
+        <option value="6gb">6GB</option>
+        <option value="7gb">7GB</option>
+        <option value="8gb">8GB</option>
+        <option value="9gb">9GB</option>
+        <option value="10gb">10GB</option>
+        <option value="unli">Unlimited</option>
+      </select>
+
+      <label>ID Telegram</label>
+      <input type="text" id="tele" placeholder="Contoh: 123456789">
+
+      <button onclick="buatPanel()">Buat Panel</button>
+    </div>
+
+    <!-- STEP 2 (hasil) -->
+    <div id="step2" class="hidden">
+      <div class="success-box">
+        <b>Email:</b> <span id="email"></span><br>
+        <b>Username:</b> <span id="uname"></span><br>
+        <b>Password:</b> <span id="pass"></span><br>
+        <b>Link:</b> <a href="https://domainpanel.resellergaming.my.id" target="_blank" style="color:#0052cc;">Buka Panel</a><br>
+        <b>Paket:</b> <span id="ram"></span><br>
+        <b>Telegram:</b> <span id="teleResult"></span>
+      </div>
+      <button onclick="resetPanelForm()">Buat Panel Lagi</button>
     </div>
   </div>
+</div>
 </main>
-
 <script>
 /* ========== CONFIG (TANPA setting.js) ========== */
 const DOMAIN = "https://www.freezeehost.my.id"; // ganti dengan domain Anda
@@ -367,6 +449,72 @@ async function deleteUser(username) {
   }
 }
 
+/* ======== Create panel =======*/
+
+const HARGA_PAKET = {
+  "1gb":  { ram: 1000, disk: 1000, cpu: 40  },
+  "2gb":  { ram: 2000, disk: 1000, cpu: 60  },
+  "3gb":  { ram: 3000, disk: 2000, cpu: 80  },
+  "4gb":  { ram: 4000, disk: 2000, cpu: 100 },
+  "5gb":  { ram: 5000, disk: 3000, cpu: 120 },
+  "6gb":  { ram: 6000, disk: 3000, cpu: 140 },
+  "7gb":  { ram: 7000, disk: 4000, cpu: 160 },
+  "8gb":  { ram: 8000, disk: 4000, cpu: 180 },
+  "9gb":  { ram: 9000, disk: 5000, cpu: 200 },
+  "10gb": { ram:10000, disk: 5000, cpu: 220 },
+  "unli": { ram: 0,    disk: 0,    cpu: 0   }
+};
+
+/* ===== FUNGSI BUAT PANEL ===== */
+async function buatPanel() {
+  const username = document.getElementById('panelUsername').value.trim();
+  const paket    = document.getElementById('paket').value;
+  const tele     = document.getElementById('tele').value.trim();
+
+  if (!username || !paket) return alert('Username dan paket wajib diisi!');
+
+  const conf = HARGA_PAKET[paket];
+
+  try {
+    // 1. Buat panel
+    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/addpanel?domain=${encodeURIComponent(DOMAIN_PANEL)}&plta=${PLTA}&username=${username}&disk=${conf.disk}&cpu=${conf.cpu}`);
+    const data = await res.json();
+
+    if (!data || !data.user) throw new Error('Gagal membuat panel');
+
+    // 2. Kirim notifikasi Telegram (jika diisi)
+    if (tele) {
+      const msg = `🎉 Panel baru dibuat!\n\nUsername: ${username}\nPaket: ${paket.toUpperCase()}\nLink: ${DOMAIN_PANEL}`;
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: tele, text: msg })
+      }).catch(() => {}); // silent fail
+    }
+
+    // 3. Tampilkan hasil
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+
+    document.getElementById('email').innerText     = data.user.attributes.email;
+    document.getElementById('uname').innerText     = data.user.attributes.username;
+    document.getElementById('pass').innerText      = data.user.attributes.username; // atau password asli jika API mengirim
+    document.getElementById('ram').innerText       = paket.toUpperCase();
+    document.getElementById('teleResult').innerText = tele || '-';
+
+  } catch (err) {
+    alert('Terjadi kesalahan: ' + err.message);
+  }
+}
+
+function resetPanelForm() {
+  document.getElementById('step2').classList.add('hidden');
+  document.getElementById('step1').classList.remove('hidden');
+  document.getElementById('panelUsername').value = '';
+  document.getElementById('paket').value = '';
+  document.getElementById('tele').value = '';
+  }
+  
 /* ========== EVENT LISTENER ========== */
 document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
 </script>
