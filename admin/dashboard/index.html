@@ -404,6 +404,7 @@
         <td style="padding:8px">${s.identifier}</td>
         <td style="padding:8px">${s.owner_id}</td>`;
       tbody.appendChild(tr);
+      });
   }catch(err){
     let msg = err.name === 'AbortError' ? '⏱ Request timeout (120 detik)' : err.message;
     tbody.innerHTML = `<tr><td colspan="4" style="color:red;text-align:center;padding:20px">❌ ${msg}</td></tr>`;
