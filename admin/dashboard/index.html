@@ -240,6 +240,59 @@
   background: #005fcc;
 }
   </style>
+  <style>
+/* ===== CREATE ADMIN STYLE ===== */
+#createadmin .card {
+  background: #1e1e1e;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(0,255,255,0.2);
+  border-radius: 12px;
+  padding: 30px;
+}
+#createadmin input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 6px;
+  background: #2a2a2a;
+  color: #fff;
+}
+#createadmin button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: #00bcd4;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background .3s;
+}
+#createadmin button:hover {
+  background: #00e5ff;
+}
+#createadmin .loading {
+  display: none;
+  text-align: center;
+  margin-top: 10px;
+  color: #00bcd4;
+}
+#createadmin .result {
+  display: none;
+  margin-top: 20px;
+  font-size: 14px;
+  text-align: left;
+}
+#createadmin .result p {
+  margin: 5px 0;
+}
+#createadmin .note {
+  margin-top: 15px;
+  font-size: 12px;
+  color: #ff9800;
+}
+  </style>
 </head>
 <body>
 
@@ -410,6 +463,33 @@
         <b>Telegram:</b> <span id="teleResult"></span>
       </div>
       <button onclick="resetPanelForm()">Buat Panel Lagi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CREATE ADMIN PANEL ===== -->
+<div class="page" id="createadmin">
+  <div class="card" style="max-width:480px;margin:0 auto;text-align:center;">
+    <h2>Create Admin Panel</h2>
+
+    <!-- INPUT -->
+    <input type="text" id="adminUser" placeholder="Masukkan username">
+    <input type="text" id="adminTele" placeholder="ID Telegram (opsional)">
+
+    <button onclick="createAdmin()">Create Admin Panel</button>
+
+    <!-- LOADING -->
+    <div class="loading" id="loadingAdmin">Membuat admin panel...</div>
+
+    <!-- HASIL -->
+    <div class="result" id="resultAdmin">
+      <p><strong>Creator:</strong> <span id="creator"></span></p>
+      <p><strong>Username:</strong> <span id="resUsername"></span></p>
+      <p><strong>Password:</strong> <span id="password"></span></p>
+      <p><strong>Email:</strong> <span id="email"></span></p>
+      <p><strong>Domain:</strong> <span id="domain"></span></p>
+      <div class="note">Note: Jangan rusuh anjing kalo make adp</div>
+      <button onclick="resetAdminForm()" style="margin-top:15px;">Buat Lagi</button>
     </div>
   </div>
 </div>
@@ -751,6 +831,59 @@ document.addEventListener('DOMContentLoaded', () => {
   countUsers();
   countServers(); // boleh parallel
 });
+
+/* ===== FUNGSI BUAT ADMIN ===== */
+async function createAdmin() {
+  const username = document.getElementById('adminUser').value.trim();
+  const tele     = document.getElementById('adminTele').value.trim();
+
+  if (!username) return alert('Username wajib diisi!');
+
+  const url = `https://api.resellergaming.my.id/pterodactyl/addadmin?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}&username=${username}`;
+
+  document.getElementById('loadingAdmin').style.display = 'block';
+  document.getElementById('resultAdmin').style.display  = 'none';
+
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if (data.status) {
+      // tampilkan hasil
+      document.getElementById('creator').innerText     = data.creator;
+      document.getElementById('resUsername').innerText = data.data.attributes.username;
+      document.getElementById('password').innerText    = data.data.attributes.username; // atau password asli jika API kirim
+      document.getElementById('email').innerText       = data.data.attributes.email;
+      document.getElementById('domain').innerText      = DOMAIN;
+
+      // kirim notifikasi telegram (opsional)
+      if (tele) {
+        const msg = `✅ Admin panel baru dibuat!\n\nUsername: ${username}\nDomain: ${DOMAIN}`;
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: tele, text: msg })
+        }).catch(() => {}); // silent fail
+      }
+
+      document.getElementById('resultAdmin').style.display = 'block';
+    } else {
+      alert('Gagal membuat admin: ' + data.message);
+    }
+  } catch (err) {
+    alert('Terjadi kesalahan: ' + err.message);
+  } finally {
+    document.getElementById('loadingAdmin').style.display = 'none';
+  }
+}
+
+/* ===== RESET FORM ===== */
+function resetAdminForm() {
+  document.getElementById('resultAdmin').style.display  = 'none';
+  document.getElementById('loadingAdmin').style.display = 'none';
+  document.getElementById('adminUser').value = '';
+  document.getElementById('adminTele').value = '';
+  }
   
 /* ========== EVENT LISTENER ========== */
 document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
