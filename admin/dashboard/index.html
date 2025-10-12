@@ -4,6 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel</title>
+   <!-- Tambahkan sebelum </head> -->
+<script src="setting.js"></script>
   <style>
     :root {
       --bg: #f4f6f8;
@@ -103,18 +105,19 @@
   </div>
 
   <!-- Server -->
-  <div class="page" id="server">
-    <div class="card">
-      <h3>Daftar Server</h3>
-      <table>
-        <thead><tr><th>#</th><th>Nama Server</th><th>Lokasi</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td>Server A</td><td>Jakarta</td><td>🟢 Aktif</td></tr>
-          <tr><td>2</td><td>Server B</td><td>Surabaya</td><td>🟢 Aktif</td></tr>
-        </tbody>
-      </table>
-    </div>
+<div class="page" id="server">
+  <div class="card">
+    <h3>Daftar Server (dari API)</h3>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Nama Server</th><th>Identifier</th><th>Owner ID</th></tr>
+      </thead>
+      <tbody id="serverTableBody">
+        <tr><td colspan="4">⏳ Memuat server...</td></tr>
+      </tbody>
+    </table>
   </div>
+</div>
 
   <!-- Reseller -->
   <div class="page" id="reseller">
@@ -347,6 +350,38 @@
     alert("❌ Terjadi kesalahan: " + err.message);
   }
   }
+
+  
+  // Fungsi load server dari API
+  async function loadServers() {
+    const tbody = document.getElementById('serverTableBody');
+    const { domain, plta } = window.SETTINGS;
+    const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(domain)}&plta=${plta}`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (!data.status) throw new Error(data.message || 'Gagal ambil server');
+
+      tbody.innerHTML = '';
+      data.servers.forEach((srv, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${srv.name}</td>
+          <td>${srv.identifier}</td>
+          <td>${srv.owner_id}</td>`;
+        tbody.appendChild(tr);
+      });
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="4" style="color:red;">❌ ${err.message}</td></tr>`;
+    }
+  }
+
+  // Panggil saat halaman server dibuka
+  document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
+
 </script>
 </body>
   </html>
