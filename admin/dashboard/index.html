@@ -187,19 +187,20 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 20px;
+  gap: 40px;
+  margin-top: 20px;
 }
 .bar-group {
   display: flex;
-  gap: 20px;
+  gap: 40px;
   align-items: flex-end;
 }
 .bar {
-  width: 40px;
+  width: 50px;
   background: var(--primary);
   border-radius: 8px 8px 0 0;
   position: relative;
-  animation: growBar 1s ease-out;
+  transition: height 1s ease-out;
 }
 .bar::after {
   content: attr(data-label);
@@ -210,8 +211,12 @@
   font-size: 12px;
   color: #666;
 }
-@keyframes growBar {
-  from { height: 0; }
+.chart-labels {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
 /* ===== TOMBOL CEPAT ===== */
@@ -256,11 +261,11 @@
     <button class="toggle-dark" onclick="toggleDark()">🌙 Dark</button>
   </div>
 
-  <!-- ===== DASHBOARD (NEW LOOK) ===== -->
+<!-- ===== DASHBOARD (NEW) ===== -->
 <div class="page active" id="dashboard">
   <div class="card-header">
     <div class="date-clock" id="dateClock">Kamis, 12 Juni 2025</div>
-    <div class="time" id="clock">14:35:22</div>
+    <div class="time" id="clock">17:32:01</div>
     <button class="toggle-dark" onclick="toggleDark()">🌙</button>
   </div>
 
@@ -270,34 +275,38 @@
   <div class="info-grid">
     <div class="info-card gradient-blue">
       <div class="icon">👥</div>
-      <div class="value" id="totalUsers">42</div>
+      <div class="value" id="totalUsers">-</div>
       <div class="label">Total User</div>
     </div>
     <div class="info-card gradient-green">
       <div class="icon">🖥</div>
-      <div class="value" id="totalServers">5</div>
+      <div class="value" id="totalServers">-</div>
       <div class="label">Total Server</div>
     </div>
     <div class="info-card gradient-purple">
       <div class="icon">🌐</div>
-      <div class="value" id="ip">114.5.6.7</div>
+      <div class="value" id="ip">-</div>
       <div class="label">IP Anda</div>
     </div>
     <div class="info-card gradient-orange">
       <div class="icon">🔋</div>
-      <div class="value" id="battery">85%</div>
+      <div class="value" id="battery">-</div>
       <div class="label">Baterai</div>
     </div>
   </div>
 
-  <!-- Grafik Sederhana (Animasi CSS) -->
+  <!-- Grafik Batang (AKAN DIISI OTOMATIS) -->
   <div class="card" style="margin-top:30px;">
     <h3>📈 User & Server</h3>
     <div class="chart">
       <div class="bar-group">
-        <div class="bar" style="height:60%;" data-label="User"></div>
-        <div class="bar" style="height:40%;" data-label="Server"></div>
+        <div class="bar" data-label="User" style="height:0%;"></div>
+        <div class="bar" data-label="Server" style="height:0%;"></div>
       </div>
+    </div>
+    <div class="chart-labels">
+      <span>User: <b id="userCount">0</b></span>
+      <span>Server: <b id="serverCount">0</b></span>
     </div>
   </div>
 
@@ -307,7 +316,8 @@
     <button onclick="gotoPage('server')">🖥 Lihat Server</button>
     <button onclick="gotoPage('reseller')">👤 Kelola Reseller</button>
   </div>
-  </div>
+</div>
+  
   <!-- SERVER -->
   <div class="page" id="server">
     <div class="card">
@@ -674,10 +684,11 @@ function gotoPage(pageId) {
   }
 
   /* ===== VARIABEL GLOBAL ===== */
+
 let userCount   = 0;
 let serverCount = 0;
 
-/* ===== FUNGSI UPDATE GRAFIK ===== */
+/* ===== UPDATE GRAFIK ===== */
 function updateChart() {
   const max       = Math.max(userCount, serverCount, 1);
   const userPct   = (userCount / max) * 100;
@@ -685,36 +696,50 @@ function updateChart() {
 
   document.querySelector('.bar[data-label="User"]').style.height   = userPct + '%';
   document.querySelector('.bar[data-label="Server"]').style.height = serverPct + '%';
+
+  // Tampilkan angka di bawah batang
+  document.getElementById('userCount').innerText   = userCount;
+  document.getElementById('serverCount').innerText = serverCount;
 }
 
-/* ===== AMBIL JUMLAH USER (dari API atau users.json) ===== */
+/* ===== AMBIL JUMLAH USER ===== */
 async function countUsers() {
   try {
     const token = localStorage.getItem("admin_token");
     const res   = await fetch("/api/users", { headers: { Authorization: "Bearer " + token } });
     const data  = await res.json();
-    userCount   = data.users.length; // ← jumlah user
+    userCount   = data.users.length;
+    document.getElementById('totalUsers').innerText = userCount;
   } catch {
     userCount = 0;
+    document.getElementById('totalUsers').innerText = '-';
   }
-  updateChart(); // update grafik
+  updateChart();
 }
 
-/* ===== AMBIL JUMLAH SERVER (dari API lambat) ===== */
+/* ===== AMBIL JUMLAH SERVER ===== */
 async function countServers() {
-  const DOMAIN = "https://www.freezeehost.my.id"; // ganti
-  const PLTA   = "ptla_br6bgXHZ9wQD9BJoIAPwVqxUbiEku9hWupUORHyL3BO"; // ganti
-  const url    = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
+  const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN_PANEL)}&plta=${PLTA}`;
 
   try {
     const r = await fetch(url);
     const j = await r.json();
     serverCount = j.status ? j.servers.length : 0;
+    document.getElementById('totalServers').innerText = serverCount;
   } catch {
     serverCount = 0;
+    document.getElementById('totalServers').innerText = '-';
   }
-  updateChart(); // update grafik
+  updateChart();
 }
+
+/* ===== PANGGIL SAAT DASHBOARD DIBUKA ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  countUsers();
+  countServers(); // parallel
+});
+
+
 
 /* ===== PANGGIL SAAT HALAMAN DASHBOARD DIBUKA ===== */
 document.addEventListener('DOMContentLoaded', () => {
