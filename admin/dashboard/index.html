@@ -706,16 +706,21 @@ function updateChart() {
 async function countUsers() {
   try {
     const token = localStorage.getItem("admin_token");
-    const res   = await fetch("/api/users", { headers: { Authorization: "Bearer " + token } });
+    const res   = await fetch("/api/users", {
+      headers: { Authorization: "Bearer " + token }
+    });
     const data  = await res.json();
-    userCount   = data.users.length;
+
+    // karena data langsung array
+    userCount = data.length;
+
     document.getElementById('totalUsers').innerText = userCount;
   } catch {
     userCount = 0;
     document.getElementById('totalUsers').innerText = '-';
   }
   updateChart();
-}
+  }
 
 /* ===== AMBIL JUMLAH SERVER ===== */
 async function countServers() {
