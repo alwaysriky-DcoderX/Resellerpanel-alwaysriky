@@ -1376,7 +1376,7 @@ async function fetchUsers() {
   tbody.innerHTML = '';
 
   try {
-    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/listuser?domain=${encodeURIComponent(DOMAIN_USER)}&plta=${PLTA_USER}`);
+    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/listuser?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`);
     const json = await res.json();
 
     if (!json.status) throw new Error(json.message || 'Gagal memuat user');
