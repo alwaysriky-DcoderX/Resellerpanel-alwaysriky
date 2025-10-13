@@ -1364,11 +1364,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
 /* ========== EVENT LISTENER ========== */
 document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
-</script>
-<script>
-/* ===== KONFIG ===== */
-const DOMAIN_USER = "https://publik.jhonaley.net"; // ganti
-const PLTA_USER   = "ptla_9JhxzZce7Bg9GsZdQEXqlF4razNhqjLNSv8OIuUcg9c"; // ganti
 
 let adminCount = 0;
 
@@ -1421,7 +1416,7 @@ async function deleteUser(id) {
   result.style.display  = 'none';
 
   try {
-    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/delpanel?domain=${encodeURIComponent(DOMAIN_USER)}&plta=${PLTA_USER}&id=${id}`);
+    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/delpanel?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}&id=${id}`);
     const data = await res.json();
 
     document.getElementById('creator').textContent = data.creator;
