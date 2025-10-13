@@ -796,10 +796,10 @@
 </div>
 </main>
 <script>
-/* ========== CONFIG (TANPA setting.js) ========== */
-const DOMAIN = "https://www.freezeehost.my.id"; // ganti dengan domain Anda
-const PLTA   = "ptla_br6bgXHZ9wQD9BJoIAPwVqxUbiEku9hWupUORHyL3BO"; // ganti dengan plta Anda
-const BOT_TOKEN    = "GANTI_DENGAN_TOKEN_BOT_ANDA";  // ← taruh token Anda di sini
+/* ========== CONFIG ========== */
+const DOMAIN = "https://www.freezeehost.my.id";
+const PLTA   = "ptla_br6bgXHZ9wQD9BJoIAPwVqxUbiEku9hWupUORHyL3BO";
+const BOT_TOKEN = ""; // Kosongkan jika tidak digunakan
 
 /* ========== NAVIGASI ========== */
 const buttons = document.querySelectorAll('.nav-btn');
@@ -816,12 +816,22 @@ buttons.forEach(btn => {
     document.getElementById(target).classList.add('active');
     pageTitle.textContent = btn.textContent.slice(2);
     sidebar.classList.remove('show');
+
     if (target === 'reseller') loadResellers();
+    if (target === 'server') loadServers();
+    if (target === 'listuser') fetchUsers();
   });
 });
 
 function toggleDark() { document.body.classList.toggle('dark'); }
 function toggleSidebar() { sidebar.classList.toggle('show'); }
+function gotoPage(pageId) {
+  buttons.forEach(b => b.classList.remove('active'));
+  pages.forEach(p => p.classList.remove('active'));
+  document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+  document.getElementById(pageId).classList.add('active');
+  pageTitle.textContent = document.querySelector(`[data-page="${pageId}"]`).textContent.slice(2);
+}
 
 /* ========== DASHBOARD ========== */
 function updateClock() {
@@ -841,17 +851,17 @@ if ('getBattery' in navigator) {
     function updateBattery() {
       const level = Math.round(battery.level * 100);
       const charging = battery.charging ? '🔌 Charging' : '🔋 Baterai';
-      document.getElementById('battery').textContent = `${charging}: ${level}%`;
+      document.getElementById('battery').innerText = `${charging}: ${level}%`;
     }
     updateBattery();
     battery.addEventListener('levelchange', updateBattery);
     battery.addEventListener('chargingchange', updateBattery);
   });
 } else {
-  document.getElementById('battery').textContent = 'Tidak tersedia';
+  document.getElementById('battery').innerText = 'Tidak tersedia';
 }
 
-/* ========== SERVER (API LAMBAT) ========== */
+/* ========== SERVER ========== */
 async function loadServers() {
   const tbody = document.getElementById('serverTableBody');
   tbody.innerHTML = `
@@ -866,7 +876,7 @@ async function loadServers() {
   const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 120_000);
+  const timeoutId = setTimeout(() => controller.abort(), 120000);
 
   try {
     const r = await fetch(url, { signal: controller.signal });
@@ -936,6 +946,30 @@ function filterReseller() {
   });
 }
 
+async function deleteSeller(username) {
+  if (!confirm(`Yakin ingin menghapus reseller "${username}"?`)) return;
+  try {
+    const token = localStorage.getItem("admin_token");
+    const res = await fetch("/api/deleteUser", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert("✅ Reseller berhasil dihapus");
+      loadResellers();
+    } else {
+      alert("❌ " + (data.error || "Gagal menghapus reseller"));
+    }
+  } catch (err) {
+    alert("❌ Terjadi kesalahan: " + err.message);
+  }
+}
+
 /* ========== CREATE USER ========== */
 async function registerUser() {
   const username = document.getElementById('username').value.trim();
@@ -961,35 +995,7 @@ async function registerUser() {
   }
 }
 
-/* ========== DELETE USER ========== */
-async function deleteUser(username) {
-  if (!confirm(`Yakin ingin menghapus user "${username}"?`)) return;
-  try {
-    const token = localStorage.getItem("admin_token");
-    if (!token) return (window.location.href = "/admin/login.html");
-
-    const res = await fetch("/api/deleteUser", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token
-      },
-      body: JSON.stringify({ username })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert("✅ User berhasil dihapus");
-      loadResellers();
-    } else {
-      alert("❌ " + (data.error || "Gagal menghapus user"));
-    }
-  } catch (err) {
-    alert("❌ Terjadi kesalahan: " + err.message);
-  }
-}
-
-/* ======== Create panel =======*/
-
+/* ========== CREATE PANEL ========== */
 const HARGA_PAKET = {
   "1gb":  { ram: 1000, disk: 1000, cpu: 40  },
   "2gb":  { ram: 2000, disk: 1000, cpu: 60  },
@@ -1004,7 +1010,6 @@ const HARGA_PAKET = {
   "unli": { ram: 0,    disk: 0,    cpu: 0   }
 };
 
-/* ===== FUNGSI BUAT PANEL ===== */
 async function buatPanel() {
   const username = document.getElementById('panelUsername').value.trim();
   const paket    = document.getElementById('paket').value;
@@ -1015,29 +1020,26 @@ async function buatPanel() {
   const conf = HARGA_PAKET[paket];
 
   try {
-    // 1. Buat panel
     const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/addpanel?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}&username=${username}&disk=${conf.disk}&cpu=${conf.cpu}`);
     const data = await res.json();
 
     if (!data || !data.user) throw new Error('Gagal membuat panel');
 
-    // 2. Kirim notifikasi Telegram (jika diisi)
-    if (tele) {
+    if (tele && BOT_TOKEN) {
       const msg = `🎉 Panel baru dibuat!\n\nUsername: ${username}\nPaket: ${paket.toUpperCase()}\nLink: ${DOMAIN}`;
       await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chat_id: tele, text: msg })
-      }).catch(() => {}); // silent fail
+      }).catch(() => {});
     }
 
-    // 3. Tampilkan hasil
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
 
     document.getElementById('email').innerText     = data.user.attributes.email;
     document.getElementById('uname').innerText     = data.user.attributes.username;
-    document.getElementById('pass').innerText      = data.user.attributes.username; // atau password asli jika API mengirim
+    document.getElementById('pass').innerText      = data.user.attributes.username;
     document.getElementById('ram').innerText       = paket.toUpperCase();
     document.getElementById('teleResult').innerText = tele || '-';
 
@@ -1052,88 +1054,9 @@ function resetPanelForm() {
   document.getElementById('panelUsername').value = '';
   document.getElementById('paket').value = '';
   document.getElementById('tele').value = '';
-  }
-
-/* ===== NAVIGASI HALAMAN ===== */
-function gotoPage(pageId) {
-  // aktifkan halaman yang dipilih
-  buttons.forEach(b => b.classList.remove('active'));
-  pages.forEach(p => p.classList.remove('active'));
-  document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
-  document.getElementById(pageId).classList.add('active');
-  pageTitle.textContent = document.querySelector(`[data-page="${pageId}"]`).textContent.slice(2);
-  }
-
-  /* ===== VARIABEL GLOBAL ===== */
-
-let userCount   = 0;
-let serverCount = 0;
-
-/* ===== UPDATE GRAFIK ===== */
-function updateChart() {
-  const max       = Math.max(userCount, serverCount, 1);
-  const userPct   = (userCount / max) * 100;
-  const serverPct = (serverCount / max) * 100;
-
-  document.querySelector('.bar[data-label="User"]').style.height   = userPct + '%';
-  document.querySelector('.bar[data-label="Server"]').style.height = serverPct + '%';
-
-  // Tampilkan angka di bawah batang
-  document.getElementById('userCount').innerText   = userCount;
-  document.getElementById('serverCount').innerText = serverCount;
 }
 
-/* ===== AMBIL JUMLAH USER ===== */
-async function countUsers() {
-  try {
-    const token = localStorage.getItem("admin_token");
-    const res   = await fetch("/api/users", {
-      headers: { Authorization: "Bearer " + token }
-    });
-    const data  = await res.json();
-
-    // karena data langsung array
-    userCount = data.length;
-
-    document.getElementById('totalUsers').innerText = userCount;
-  } catch {
-    userCount = 0;
-    document.getElementById('totalUsers').innerText = '-';
-  }
-  updateChart();
-  }
-
-/* ===== AMBIL JUMLAH SERVER ===== */
-async function countServers() {
-  const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
-
-  try {
-    const r = await fetch(url);
-    const j = await r.json();
-    serverCount = j.status ? j.servers.length : 0;
-    document.getElementById('totalServers').innerText = serverCount;
-  } catch {
-    serverCount = 0;
-    document.getElementById('totalServers').innerText = '-';
-  }
-  updateChart();
-}
-
-/* ===== PANGGIL SAAT DASHBOARD DIBUKA ===== */
-document.addEventListener('DOMContentLoaded', () => {
-  countUsers();
-  countServers(); // parallel
-});
-
-
-
-/* ===== PANGGIL SAAT HALAMAN DASHBOARD DIBUKA ===== */
-document.addEventListener('DOMContentLoaded', () => {
-  countUsers();
-  countServers(); // boleh parallel
-});
-
-/* ===== FUNGSI BUAT ADMIN ===== */
+/* ========== CREATE ADMIN ========== */
 async function createAdmin() {
   const username = document.getElementById('adminUser').value.trim();
   const tele     = document.getElementById('adminTele').value.trim();
@@ -1150,21 +1073,19 @@ async function createAdmin() {
     const data = await res.json();
 
     if (data.status) {
-      // tampilkan hasil
       document.getElementById('creator').innerText     = data.creator;
       document.getElementById('resUsername').innerText = data.data.attributes.username;
-      document.getElementById('password').innerText    = data.data.attributes.username; // atau password asli jika API kirim
+      document.getElementById('password').innerText    = data.data.attributes.username;
       document.getElementById('email').innerText       = data.data.attributes.email;
       document.getElementById('domain').innerText      = DOMAIN;
 
-      // kirim notifikasi telegram (opsional)
-      if (tele) {
+      if (tele && BOT_TOKEN) {
         const msg = `✅ Admin panel baru dibuat!\n\nUsername: ${username}\nDomain: ${DOMAIN}`;
         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: tele, text: msg })
-        }).catch(() => {}); // silent fail
+        }).catch(() => {});
       }
 
       document.getElementById('resultAdmin').style.display = 'block';
@@ -1178,86 +1099,81 @@ async function createAdmin() {
   }
 }
 
-/* ===== RESET FORM ===== */
 function resetAdminForm() {
   document.getElementById('resultAdmin').style.display  = 'none';
   document.getElementById('loadingAdmin').style.display = 'none';
   document.getElementById('adminUser').value = '';
   document.getElementById('adminTele').value = '';
+}
+
+/* ========== CLEAR SERVER & USER ========== */
+async function clearServer() {
+  if (!confirm('Yakin ingin menghapus SEMUA server? Tindakan ini tidak dapat dibatalkan.')) return;
+
+  const loading = document.getElementById('loadingClear');
+  const result  = document.getElementById('resultClear');
+
+  loading.style.display = 'block';
+  result.style.display  = 'none';
+
+  const url = `https://api.resellergaming.my.id/pterodactyl/clearserver?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
+
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      showResult('success', '✅ Semua server berhasil dibersihkan!');
+      setTimeout(() => countServers(), 1500);
+    } else {
+      showResult('error', data.message || 'Gagal membersihkan server.');
+    }
+  } catch (err) {
+    showResult('error', 'Terjadi kesalahan jaringan / API tidak tersedia.');
+  } finally {
+    loading.style.display = 'none';
   }
+}
 
-  
-/* ===== FUNGSI CLEAR SERVER ===== */
-‎async function clearServer() {
-‎  if (!confirm('Yakin ingin menghapus SEMUA server? Tindakan ini tidak dapat dibatalkan.')) return;
-‎
-‎  const loading = document.getElementById('loadingClear');
-‎  const result  = document.getElementById('resultClear');
-‎
-‎  loading.style.display = 'block';
-‎  result.style.display  = 'none';
-‎
-‎  const url = `https://api.resellergaming.my.id/pterodactyl/clearserver?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
-‎
-‎  try {
-‎    const res  = await fetch(url);
-‎    const data = await res.json();
-‎
-‎    if (res.ok && data.success) {
-‎      showResult('success', '✅ Semua server berhasil dibersihkan!');
-‎      setTimeout(() => countServers(), 1500); // reload jumlah server
-‎    } else {
-‎      showResult('error', data.message || 'Gagal membersihkan server.');
-‎    }
-‎  } catch (err) {
-‎    showResult('error', 'Terjadi kesalahan jaringan / API tidak tersedia.');
-‎  } finally {
-‎    loading.style.display = 'none';
-‎  }
-‎}
-‎
-‎/* ===== FUNGSI CLEAR USER PANEL ===== */
-‎async function clearUsers() {
-‎  if (!confirm('Yakin ingin menghapus SEMUA user panel? Tindakan ini tidak dapat dibatalkan.')) return;
-‎
-‎  const loading = document.getElementById('loadingClear');
-‎  const result  = document.getElementById('resultClear');
-‎
-‎  loading.style.display = 'block';
-‎  result.style.display  = 'none';
-‎
-‎  const url = `https://api.resellergaming.my.id/pterodactyl/clearuser?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
-‎
-‎  try {
-‎    const res  = await fetch(url);
-‎    const data = await res.json();
-‎
-‎    document.getElementById('resultClear').innerHTML = `
-‎      <p><strong>Creator:</strong> ${data.creator}</p>
-‎      <p><strong>Status:</strong> <span class="status ${data.status}">${data.status ? 'Success' : 'Failed'}</span></p>
-‎      <p><strong>Message:</strong> ${data.message}</p>
-‎      <p><strong>Total Deleted:</strong> ${data.total_deleted}</p>
-‎    `;
-‎    result.style.display = 'block';
-‎
-‎    if (data.status) setTimeout(() => countUsers(), 1500); // reload jumlah user
-‎  } catch (err) {
-‎    showResult('error', 'Terjadi kesalahan: ' + err.message);
-‎  } finally {
-‎    loading.style.display = 'none';
-‎  }
-‎}
-‎
-‎/* ===== TAMPILKAN HASIL ===== */
-‎function showResult(type, msg) {
-‎  const result = document.getElementById('resultClear');
-‎  result.className = 'result ' + type;
-‎  result.textContent = msg;
-‎  result.style.display = 'block';
-‎}
+async function clearUsers() {
+  if (!confirm('Yakin ingin menghapus SEMUA user panel? Tindakan ini tidak dapat dibatalkan.')) return;
 
+  const loading = document.getElementById('loadingClear');
+  const result  = document.getElementById('resultClear');
 
-/* ===== AMBIL LIST USER ===== */
+  loading.style.display = 'block';
+  result.style.display  = 'none';
+
+  const url = `https://api.resellergaming.my.id/pterodactyl/clearuser?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
+
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    result.innerHTML = `
+      <p><strong>Creator:</strong> ${data.creator}</p>
+      <p><strong>Status:</strong> <span class="status ${data.status}">${data.status ? 'Success' : 'Failed'}</span></p>
+      <p><strong>Message:</strong> ${data.message}</p>
+      <p><strong>Total Deleted:</strong> ${data.total_deleted}</p>
+    `;
+    result.style.display = 'block';
+
+    if (data.status) setTimeout(() => countUsers(), 1500);
+  } catch (err) {
+    showResult('error', 'Terjadi kesalahan: ' + err.message);
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+function showResult(type, msg) {
+  const result = document.getElementById('resultClear');
+  result.className = 'result ' + type;
+  result.textContent = msg;
+  result.style.display = 'block';
+}
+
+/* ========== LIST USER ========== */
 async function fetchUsers() {
   const loading = document.getElementById('loadingUser');
   const tbody   = document.querySelector('#userTable tbody');
@@ -1288,8 +1204,7 @@ async function fetchUsers() {
   }
 }
 
-/* ===== DELETE USER ===== */
-async function deleteSeller(id) {
+async function deleteUser(id) {
   if (!confirm(`Hapus user ID ${id}?`)) return;
 
   const loading = document.getElementById('loadingUser');
@@ -1309,7 +1224,7 @@ async function deleteSeller(id) {
     document.getElementById('servers').textContent  = data.total_servers_deleted;
     result.style.display = 'block';
 
-    if (data.status) fetchUsers(); // reload tabel
+    if (data.status) fetchUsers();
   } catch (err) {
     alert('Error: ' + err.message);
   } finally {
@@ -1317,20 +1232,62 @@ async function deleteSeller(id) {
   }
 }
 
-/* ===== TUTUP HASIL ===== */
 function closeUserResult() {
   document.getElementById('resultUser').style.display = 'none';
 }
 
-/* ===== PANGGIL SAAT HALAMAN DIBUKA ===== */
+/* ========== GRAFIK & COUNTER ========== */
+let userCount   = 0;
+let serverCount = 0;
+
+function updateChart() {
+  const max       = Math.max(userCount, serverCount, 1);
+  const userPct   = (userCount / max) * 100;
+  const serverPct = (serverCount / max) * 100;
+
+  document.querySelector('.bar[data-label="User"]').style.height   = userPct + '%';
+  document.querySelector('.bar[data-label="Server"]').style.height = serverPct + '%';
+
+  document.getElementById('userCount').innerText   = userCount;
+  document.getElementById('serverCount').innerText = serverCount;
+}
+
+async function countUsers() {
+  try {
+    const token = localStorage.getItem("admin_token");
+    const res   = await fetch("/api/users", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data  = await res.json();
+    userCount = data.length;
+    document.getElementById('totalUsers').innerText = userCount;
+  } catch {
+    userCount = 0;
+    document.getElementById('totalUsers').innerText = '-';
+  }
+  updateChart();
+}
+
+async function countServers() {
+  const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
+
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    serverCount = j.status ? j.servers.length : 0;
+    document.getElementById('totalServers').innerText = serverCount;
+  } catch {
+    serverCount = 0;
+    document.getElementById('totalServers').innerText = '-';
+  }
+  updateChart();
+}
+
+/* ========== INIT ========== */
 document.addEventListener('DOMContentLoaded', () => {
-  fetchUsers();
+  countUsers();
+  countServers();
 });
-  
-/* ========== EVENT LISTENER ========== */
-document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
-
-
 </script>
 </body>
 </html>
