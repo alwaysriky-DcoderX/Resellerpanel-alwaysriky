@@ -422,17 +422,25 @@
   <!-- Grafik Batang (AKAN DIISI OTOMATIS) -->
   <div class="card" style="margin-top:30px;">
     <h3>📈 User & Server</h3>
-    <div class="chart">
-      <div class="bar-group">
-        <div class="bar" data-label="User" style="height:0%;"></div>
-        <div class="bar" data-label="Server" style="height:0%;"></div>
-      </div>
-    </div>
-    <div class="chart-labels">
-      <span>User: <b id="userCount">0</b></span>
-      <span>Server: <b id="serverCount">0</b></span>
-    </div>
+  <div style="display:flex;gap:12px;margin-bottom:10px">
+    <button id="btnPlayServer" class="btn primary">▶ Animasi</button>
+    <input id="barColorServer" type="color" value="#10b981">
   </div>
+  <svg id="barChartServer" viewBox="0 0 800 360" preserveAspectRatio="xMidYMid meet"
+       style="width:100%;max-height:360px;background:rgba(255,255,255,.015);border-radius:10px">
+    <defs>
+      <linearGradient id="barGradServer" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#10b981" stop-opacity=".95"/>
+        <stop offset="100%" stop-color="#059669" stop-opacity=".85"/>
+      </linearGradient>
+    </defs>
+    <g id="barGroupServer" transform="translate(60,20)"></g>
+  </svg>
+  <div style="display:flex;justify-content:center;gap:30px;margin-top:10px;font-size:14px">
+    <span>User: <b id="txtUserServer">0</b></span>
+    <span>Server: <b id="txtServerServer">0</b></span>
+  </div>
+</div>
 
   <!-- Tombol Cepat -->
   <div class="quick-action">
@@ -1023,6 +1031,118 @@ function showResult(type, msg) {
   
 /* ========== EVENT LISTENER ========== */
 document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
+</script>
+<script>
+/* ---------- Mini-Bar — Server Page ---------- */
+(function(){
+  const barGroup  = document.getElementById('barGroupServer');
+  const btnPlay   = document.getElementById('btnPlayServer');
+  const barColor  = document.getElementById('barColorServer');
+  const txtUser   = document.getElementById('txtUserServer');
+  const txtServer = document.getElementById('txtServerServer');
+
+  if (!barGroup) return; // bukan halaman Server, skip
+
+  let barUser = 0, barServer = 0;
+  const maxH  = 280;
+
+  function renderBar() {
+    barGroup.innerHTML = '';
+    const max = Math.max(userCount, serverCount, 1);
+    const wBar = 60, gap = 40;
+    const xUser = 0, xServ = xUser + wBar + gap;
+
+    // Batang User
+    const uRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    uRect.setAttribute('x', xUser);
+    uRect.setAttribute('y', maxH);
+    uRect.setAttribute('width', wBar);
+    uRect.setAttribute('height', 0);
+    uRect.setAttribute('fill', 'url(#barGradServer)');
+    uRect.setAttribute('rx', 8);
+    uRect.setAttribute('data-target-h', (barUser/maxH)*maxH);
+    uRect.setAttribute('data-target-y', maxH - (barUser/maxH)*maxH);
+    barGroup.appendChild(uRect);
+
+    // Batang Server
+    const sRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    sRect.setAttribute('x', xServ);
+    sRect.setAttribute('y', maxH);
+    sRect.setAttribute('width', wBar);
+    sRect.setAttribute('height', 0);
+    sRect.setAttribute('fill', 'url(#barGradServer)');
+    sRect.setAttribute('rx', 8);
+    sRect.setAttribute('data-target-h', (barServer/maxH)*maxH);
+    sRect.setAttribute('data-target-y', maxH - (barServer/maxH)*maxH);
+    barGroup.appendChild(sRect);
+
+    // Label
+    ['User','Server'].forEach((lab,i)=>{
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', i===0? xUser+wBar/2 : xServ+wBar/2);
+      t.setAttribute('y', maxH+18);
+      t.setAttribute('text-anchor','middle');
+      t.setAttribute('font-size','12');
+      t.setAttribute('fill','rgba(255,255,255,.7)');
+      t.textContent = lab;
+      barGroup.appendChild(t);
+    });
+  }
+
+  function animateBar() {
+    const rects = barGroup.querySelectorAll('rect');
+    rects.forEach((r,idx)=>{
+      const targetH = parseFloat(r.getAttribute('data-target-h'));
+      const targetY = parseFloat(r.getAttribute('data-target-y'));
+      const start = performance.now() + idx*120;
+      const dur   = 800;
+      function frame(t){
+        const el  = t - start;
+        if(el<0){ requestAnimationFrame(frame); return; }
+        const p   = Math.min(1, el/dur);
+        const ease= 1 - Math.pow(1-p,3);
+        const h   = ease * targetH;
+        const y   = maxH - h;
+        r.setAttribute('height', h);
+        r.setAttribute('y', y);
+        if(p<1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  function shadeColor(hex,percent){
+    const num=parseInt(hex.slice(1),16);
+    const r=Math.min(255,Math.max(0,(num>>16)+percent));
+    const g=Math.min(255,Math.max(0,((num>>8)&0x00FF)+percent));
+    const b=Math.min(255,Math.max(0,(num&0x0000FF)+percent));
+    return '#' + (0x1000000+(r<<16)+(g<<8)+b).toString(16).slice(1);
+  }
+
+  barColor.addEventListener('input',()=>{
+    const c1 = barColor.value;
+    const c2 = shadeColor(c1,-30);
+    document.querySelector('#barGradServer stop:nth-child(1)').setAttribute('stop-color',c1);
+    document.querySelector('#barGradServer stop:nth-child(2)').setAttribute('stop-color',c2);
+  });
+
+  btnPlay.addEventListener('click', animateBar);
+
+  /* isi data & animasi */
+  function updateBarServer(){
+    txtUser.textContent   = userCount;
+    txtServer.textContent = serverCount;
+    barUser   = userCount;
+    barServer = serverCount;
+    renderBar();
+    setTimeout(animateBar, 300);
+  }
+
+  /* panggil setelah API Anda selesai */
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(updateBarServer, 1000);
+  });
+})();
 </script>
 </body>
 </html>
