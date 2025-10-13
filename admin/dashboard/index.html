@@ -293,54 +293,41 @@
   color: #ff9800;
 }
   </style>
-<style>
-/* ===== CLEAR PAGE STYLE ===== */
+  <style>
+/* ===== CLEAR SERVER STYLE ===== */
 #clearserver .card {
   background: #1e1e1e;
   color: #fff;
-  box-shadow: 0 0 25px rgba(255, 82, 82, 0.25);
-  border-radius: 16px;
-  padding: 40px;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.25);
+  border-radius: 15px;
+  padding: 40px 30px;
 }
 #clearserver h2 {
   margin-bottom: 20px;
   font-weight: 600;
-  color: #ff5252;
 }
 #clearserver .warning-box {
-  background: #ff525222;
-  border-left: 5px solid #ff5252;
+  background: rgba(255, 152, 0, 0.15);
+  border: 1px solid #ff9800;
+  border-radius: 8px;
   padding: 15px;
   margin-bottom: 25px;
-  border-radius: 8px;
   font-size: 14px;
-  color: #ffcdd2;
+  color: #ff9800;
 }
-#clearserver .warning-box.user {
-  border-color: #f44336;
-  background: #f4433622;
-  color: #ffcdd2;
-}
-#clearserver .btn-danger {
+#clearserver button {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   border: none;
   border-radius: 8px;
-  background: #ff5252;
-  color: #000;
-  font-weight: bold;
-  font-size: 16px;
+  background: #dc3545;
+  color: #fff;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background .3s ease;
+  transition: background .3s;
 }
-#clearserver .btn-danger.user {
-  background: #f44336;
-}
-#clearserver .btn-danger:hover {
-  background: #ff7474;
-}
-#clearserver .btn-danger.user:hover {
-  background: #ff6659;
+#clearserver button:hover {
+  background: #c82333;
 }
 #clearserver .loading {
   display: none;
@@ -348,11 +335,11 @@
   margin-top: 20px;
 }
 #clearserver .spinner {
-  border: 4px solid #2a2a2a;
-  border-top: 4px solid #ff5252;
-  border-radius: 50%;
   width: 40px;
   height: 40px;
+  border: 4px solid #ffffff33;
+  border-top: 4px solid #fff;
+  border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 10px;
 }
@@ -360,199 +347,35 @@
   to { transform: rotate(360deg); }
 }
 #clearserver .result {
-  display: none;
   margin-top: 25px;
-  font-size: 14px;
-  background: #2a2a2a;
   padding: 15px;
   border-radius: 8px;
+  display: none;
+  font-weight: 600;
 }
-#clearserver .result p {
-  margin: 6px 0;
-}
-#clearserver .status.true {
-  color: #4caf50;
-}
-#clearserver .status.false {
-  color: #f44336;
-}
-</style>
-<style>
-/* ===== LIST USER STYLE ===== */
-#listuser .card {
-  background: #1e1e1e;
+#clearserver .success {
+  background: var(--success);
   color: #fff;
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 25px;
 }
-#listuser h2 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #00bcd4;
+#clearserver .error {
+  background: var(--danger);
+  color: #fff;
 }
-#listuser table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-#listuser th,
-#listuser td {
-  padding: 10px;
-  text-align: left;
-}
-#listuser th {
-  background: #2a2a2a;
-  color: #00bcd4;
-}
-#listuser tr:nth-child(even) {
-  background: #252525;
-}
-#listuser .btn-del {
-  background: #ff5252;
-  color: #000;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-#listuser .btn-del:hover {
-  background: #ff7474;
-}
-#listuser .loading {
-  display: none;
-  text-align: center;
-  margin: 20px 0;
-}
-#listuser .spinner {
-  border: 4px solid #2a2a2a;
-  border-top: 4px solid #00bcd4;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-#listuser .result-box {
-  display: none;
-  margin-top: 25px;
-  background: #2a2a2a;
-  padding: 15px;
-  border-radius: 8px;
-  position: relative;
-}
-#listuser .close {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 20px;
-  color: #ffcdd2;
-  cursor: pointer;
-}
-</style>
-<style>
-/* ===== TABEL USER STYLE ===== */
-#userTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  margin-top: 10px;
-}
-#userTable th,
-#userTable td {
-  padding: 10px;
-  text-align: left;
-}
-#userTable th {
-  background: #2a2a2a;
-  color: #00bcd4;
-}
-#userTable tr:nth-child(even) {
-  background: #252525;
-}
-#userTable .btn-del {
-  background: #ff5252;
-  color: #000;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-#userTable .btn-del:hover {
-  background: #ff7474;
-}
-#userTable .loading {
-  display: none;
-  text-align: center;
-  margin: 20px 0;
-}
-#userTable .spinner {
-  border: 4px solid #2a2a2a;
-  border-top: 4px solid #00bcd4;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-#userTable .result-box {
-  display: none;
-  margin-top: 25px;
-  background: #2a2a2a;
-  padding: 15px;
-  border-radius: 8px;
-  position: relative;
-}
-#userTable .close {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 20px;
-  color: #ffcdd2;
-  cursor: pointer;
-}
-#userTable .total-admin {
-  margin-top: 15px;
-  font-size: 14px;
-  color: #00bcd4;
-}
-
-@keyframes growUp {
-  from {
-    height: 0%;
-  }
-  to {
-    height: var(--final-height);
-  }
-}
-
-.bar {
-  animation: growUp 1s ease-out forwards;
-  }
-</style>
+  </style>
 </head>
 <body>
 
 <aside id="sidebar">
   <h2>Admin Panel</h2>
-<nav>
-  <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
-  <button class="nav-btn" data-page="server">🖥 Server</button>
-  <button class="nav-btn" data-page="reseller">👤 Reseller</button>
-  <button class="nav-btn" data-page="create">➕ Create User</button>
-  <button class="nav-btn" data-page="createpanel">🧩 Create Panel</button>
-  <button class="nav-btn" data-page="createadmin">🔐 Create Admin</button>
-  <button class="nav-btn" data-page="clearserver">🗑 Clear Server</button>
-  <button class="nav-btn" data-page="listuser">📋 List User</button>
-</nav>
+  <nav>
+    <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+    <button class="nav-btn" data-page="server">🖥 Server</button>
+    <button class="nav-btn" data-page="reseller">👤 Reseller</button>
+    <button class="nav-btn" data-page="create">➕ Create User</button>
+    <button class="nav-btn" data-page="createpanel">🧩 Create Panel</button>
+    <button class="nav-btn" data-page="createadmin">🔐 Create Admin</button>
+    <button class="nav-btn" data-page="clearserver">🗑 Clear Server</button>
+  </nav>
 </aside>
 
 <main id="main">
@@ -595,22 +418,38 @@
       <div class="label">Baterai</div>
     </div>
   </div>
-  
 
   <!-- Grafik Batang (AKAN DIISI OTOMATIS) -->
   <div class="card" style="margin-top:30px;">
     <h3>📈 User & Server</h3>
-    <div class="chart">
-      <div class="bar-group">
-        <div class="bar" data-label="User" style="height:0%;"></div>
-        <div class="bar" data-label="Server" style="height:0%;"></div>
-      </div>
-    </div>
-    <div class="chart-labels">
-      <span>User: <b id="userCount">0</b></span>
-      <span>Server: <b id="serverCount">0</b></span>
-    </div>
+    <!-- Di dalam card -->
+<div id="barCard" style="margin-top:30px;">
+  <h3>📊 User & Server</h3>
+
+  <!-- Kontrol warna & animasi (opsional) -->
+  <div style="display:flex;gap:12px;margin-bottom:12px">
+    <button id="btnPlay" class="btn primary">▶ Animasi</button>
+    <input id="barColor" type="color" value="#10b981" title="Warna batang">
   </div>
+
+  <!-- SVG diagram -->
+  <svg id="barChart" viewBox="0 0 800 360" preserveAspectRatio="xMidYMid meet"
+       style="width:100%;max-height:360px;background:rgba(255,255,255,.015);border-radius:10px">
+    <defs>
+      <linearGradient id="barGrad" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#10b981" stop-opacity=".95"/>
+        <stop offset="100%" stop-color="#059669" stop-opacity=".85"/>
+      </linearGradient>
+    </defs>
+    <g id="barGroup" transform="translate(60,20)"></g>
+  </svg>
+
+  <!-- Label angka -->
+  <div style="display:flex;justify-content:center;gap:30px;margin-top:10px;font-size:14px">
+    <span>User: <b id="txtUser">0</b></span>
+    <span>Server: <b id="txtServer">0</b></span>
+  </div>
+</div>
 
   <!-- Tombol Cepat -->
   <div class="quick-action">
@@ -743,76 +582,36 @@
   </div>
 </div>
 
-<!-- ===== CLEAR SERVER & CLEAR USER ===== -->
+<!-- ===== CLEAR SERVER ===== -->
 <div class="page" id="clearserver">
   <div class="card" style="max-width:480px;margin:0 auto;text-align:center;">
+    <h2>Clear Server</h2>
 
-    <!-- CLEAR SERVER -->
-    <h2>🗑 Clear Server</h2>
+    <!-- WARNING -->
     <div class="warning-box">
       ⚠️ <strong>WARNING</strong> ⚠️<br>
       Sebelum clear all server / membersihkan semua server harap pikir kembali dan ini hanya membersihkan server bukan dengan user, sekian terima ☺️
     </div>
-    <button class="btn-danger" onclick="clearServer()">Clear Server</button>
 
-    <!-- CLEAR USER PANEL -->
-    <h2 style="margin-top:40px;">👤 Clear All Users</h2>
-    <div class="warning-box user">
-      ⚠️ <strong>WARNING</strong> ⚠️<br>
-      Ini akan menghapus SEMUA user panel Pterodactyl. Tindakan tidak dapat dibatalkan.
-    </div>
-    <button class="btn-danger user" onclick="clearUsers()">Clear All Users</button>
+    <!-- TOMBOL CLEAR -->
+    <button onclick="clearServer()">Clear Server</button>
 
-    <!-- LOADING & HASIL -->
+    <!-- LOADING -->
     <div class="loading" id="loadingClear">
       <div class="spinner"></div>
-      <p>Memproses...</p>
+      <p>Menghapus server, harap tunggu...</p>
     </div>
+
+    <!-- HASIL -->
     <div class="result" id="resultClear"></div>
-  </div>
-</div>
-
-<!-- ===== LIST USER PANEL ===== -->
-<div class="page" id="listuser">
-  <div class="card" style="max-width:900px;margin:0 auto;">
-    <h2>List User Pterodactyl</h2>
-
-    <!-- Loading -->
-    <div class="loading" id="loadingUser">
-      <div class="spinner"></div>
-      <p>Memuat user...</p>
-    </div>
-
-    <!-- Tabel -->
-    <table id="userTable">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Username</th>
-          <th>Email</th>
-          <th>Admin</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <!-- Hasil Delete -->
-    <div class="result-box" id="resultUser" style="display:none;">
-      <span class="close" onclick="closeUserResult()">&times;</span>
-      <p><strong>Creator:</strong> <span id="creator"></span></p>
-      <p><strong>Status:</strong> <span id="status"></span></p>
-      <p><strong>Message:</strong> <span id="message"></span></p>
-      <p><strong>Servers Deleted:</strong> <span id="servers"></span></p>
-    </div>
   </div>
 </div>
 </main>
 <script>
-/* ========== CONFIG ========== */
-const DOMAIN = "https://www.freezeehost.my.id";
-const PLTA   = "ptla_br6bgXHZ9wQD9BJoIAPwVqxUbiEku9hWupUORHyL3BO";
-const BOT_TOKEN = ""; // Kosongkan jika tidak digunakan
+/* ========== CONFIG (TANPA setting.js) ========== */
+const DOMAIN = "https://www.freezeehost.my.id"; // ganti dengan domain Anda
+const PLTA   = "ptla_br6bgXHZ9wQD9BJoIAPwVqxUbiEku9hWupUORHyL3BO"; // ganti dengan plta Anda
+const BOT_TOKEN    = "GANTI_DENGAN_TOKEN_BOT_ANDA";  // ← taruh token Anda di sini
 
 /* ========== NAVIGASI ========== */
 const buttons = document.querySelectorAll('.nav-btn');
@@ -829,22 +628,12 @@ buttons.forEach(btn => {
     document.getElementById(target).classList.add('active');
     pageTitle.textContent = btn.textContent.slice(2);
     sidebar.classList.remove('show');
-
     if (target === 'reseller') loadResellers();
-    if (target === 'server') loadServers();
-    if (target === 'listuser') fetchUsers();
   });
 });
 
 function toggleDark() { document.body.classList.toggle('dark'); }
 function toggleSidebar() { sidebar.classList.toggle('show'); }
-function gotoPage(pageId) {
-  buttons.forEach(b => b.classList.remove('active'));
-  pages.forEach(p => p.classList.remove('active'));
-  document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
-  document.getElementById(pageId).classList.add('active');
-  pageTitle.textContent = document.querySelector(`[data-page="${pageId}"]`).textContent.slice(2);
-}
 
 /* ========== DASHBOARD ========== */
 function updateClock() {
@@ -864,17 +653,17 @@ if ('getBattery' in navigator) {
     function updateBattery() {
       const level = Math.round(battery.level * 100);
       const charging = battery.charging ? '🔌 Charging' : '🔋 Baterai';
-      document.getElementById('battery').innerText = `${charging}: ${level}%`;
+      document.getElementById('battery').textContent = `${charging}: ${level}%`;
     }
     updateBattery();
     battery.addEventListener('levelchange', updateBattery);
     battery.addEventListener('chargingchange', updateBattery);
   });
 } else {
-  document.getElementById('battery').innerText = 'Tidak tersedia';
+  document.getElementById('battery').textContent = 'Tidak tersedia';
 }
 
-/* ========== SERVER ========== */
+/* ========== SERVER (API LAMBAT) ========== */
 async function loadServers() {
   const tbody = document.getElementById('serverTableBody');
   tbody.innerHTML = `
@@ -889,7 +678,7 @@ async function loadServers() {
   const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 120000);
+  const timeoutId = setTimeout(() => controller.abort(), 120_000);
 
   try {
     const r = await fetch(url, { signal: controller.signal });
@@ -940,7 +729,7 @@ async function loadResellers() {
         <td>${u.password}</td>
         <td>${new Date(u.created_at).toLocaleString()}</td>
         <td>
-          <button onclick="deleteSeller('${u.username}')" style="background:#e74c3c;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Hapus</button>
+          <button onclick="deleteUser('${u.username}')" style="background:#e74c3c;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Hapus</button>
         </td>`;
       tbody.appendChild(tr);
     });
@@ -957,30 +746,6 @@ function filterReseller() {
     const username = row.cells[1]?.textContent.toLowerCase();
     row.style.display = username && username.includes(input) ? "" : "none";
   });
-}
-
-async function deleteSeller(username) {
-  if (!confirm(`Yakin ingin menghapus reseller "${username}"?`)) return;
-  try {
-    const token = localStorage.getItem("admin_token");
-    const res = await fetch("/api/deleteUser", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token
-      },
-      body: JSON.stringify({ username })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      alert("✅ Reseller berhasil dihapus");
-      loadResellers();
-    } else {
-      alert("❌ " + (data.error || "Gagal menghapus reseller"));
-    }
-  } catch (err) {
-    alert("❌ Terjadi kesalahan: " + err.message);
-  }
 }
 
 /* ========== CREATE USER ========== */
@@ -1008,7 +773,35 @@ async function registerUser() {
   }
 }
 
-/* ========== CREATE PANEL ========== */
+/* ========== DELETE USER ========== */
+async function deleteUser(username) {
+  if (!confirm(`Yakin ingin menghapus user "${username}"?`)) return;
+  try {
+    const token = localStorage.getItem("admin_token");
+    if (!token) return (window.location.href = "/admin/login.html");
+
+    const res = await fetch("/api/deleteUser", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert("✅ User berhasil dihapus");
+      loadResellers();
+    } else {
+      alert("❌ " + (data.error || "Gagal menghapus user"));
+    }
+  } catch (err) {
+    alert("❌ Terjadi kesalahan: " + err.message);
+  }
+}
+
+/* ======== Create panel =======*/
+
 const HARGA_PAKET = {
   "1gb":  { ram: 1000, disk: 1000, cpu: 40  },
   "2gb":  { ram: 2000, disk: 1000, cpu: 60  },
@@ -1023,6 +816,7 @@ const HARGA_PAKET = {
   "unli": { ram: 0,    disk: 0,    cpu: 0   }
 };
 
+/* ===== FUNGSI BUAT PANEL ===== */
 async function buatPanel() {
   const username = document.getElementById('panelUsername').value.trim();
   const paket    = document.getElementById('paket').value;
@@ -1033,26 +827,29 @@ async function buatPanel() {
   const conf = HARGA_PAKET[paket];
 
   try {
-    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/addpanel?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}&username=${username}&disk=${conf.disk}&cpu=${conf.cpu}`);
+    // 1. Buat panel
+    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/addpanel?domain=${encodeURIComponent(DOMAIN_PANEL)}&plta=${PLTA}&username=${username}&disk=${conf.disk}&cpu=${conf.cpu}`);
     const data = await res.json();
 
     if (!data || !data.user) throw new Error('Gagal membuat panel');
 
-    if (tele && BOT_TOKEN) {
-      const msg = `🎉 Panel baru dibuat!\n\nUsername: ${username}\nPaket: ${paket.toUpperCase()}\nLink: ${DOMAIN}`;
+    // 2. Kirim notifikasi Telegram (jika diisi)
+    if (tele) {
+      const msg = `🎉 Panel baru dibuat!\n\nUsername: ${username}\nPaket: ${paket.toUpperCase()}\nLink: ${DOMAIN_PANEL}`;
       await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chat_id: tele, text: msg })
-      }).catch(() => {});
+      }).catch(() => {}); // silent fail
     }
 
+    // 3. Tampilkan hasil
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
 
     document.getElementById('email').innerText     = data.user.attributes.email;
     document.getElementById('uname').innerText     = data.user.attributes.username;
-    document.getElementById('pass').innerText      = data.user.attributes.username;
+    document.getElementById('pass').innerText      = data.user.attributes.username; // atau password asli jika API mengirim
     document.getElementById('ram').innerText       = paket.toUpperCase();
     document.getElementById('teleResult').innerText = tele || '-';
 
@@ -1067,9 +864,88 @@ function resetPanelForm() {
   document.getElementById('panelUsername').value = '';
   document.getElementById('paket').value = '';
   document.getElementById('tele').value = '';
+  }
+
+/* ===== NAVIGASI HALAMAN ===== */
+function gotoPage(pageId) {
+  // aktifkan halaman yang dipilih
+  buttons.forEach(b => b.classList.remove('active'));
+  pages.forEach(p => p.classList.remove('active'));
+  document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+  document.getElementById(pageId).classList.add('active');
+  pageTitle.textContent = document.querySelector(`[data-page="${pageId}"]`).textContent.slice(2);
+  }
+
+  /* ===== VARIABEL GLOBAL ===== */
+
+let userCount   = 0;
+let serverCount = 0;
+
+/* ===== UPDATE GRAFIK ===== */
+function updateChart() {
+  const max       = Math.max(userCount, serverCount, 1);
+  const userPct   = (userCount / max) * 100;
+  const serverPct = (serverCount / max) * 100;
+
+  document.querySelector('.bar[data-label="User"]').style.height   = userPct + '%';
+  document.querySelector('.bar[data-label="Server"]').style.height = serverPct + '%';
+
+  // Tampilkan angka di bawah batang
+  document.getElementById('userCount').innerText   = userCount;
+  document.getElementById('serverCount').innerText = serverCount;
 }
 
-/* ========== CREATE ADMIN ========== */
+/* ===== AMBIL JUMLAH USER ===== */
+async function countUsers() {
+  try {
+    const token = localStorage.getItem("admin_token");
+    const res   = await fetch("/api/users", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data  = await res.json();
+
+    // karena data langsung array
+    userCount = data.length;
+
+    document.getElementById('totalUsers').innerText = userCount;
+  } catch {
+    userCount = 0;
+    document.getElementById('totalUsers').innerText = '-';
+  }
+  updateChart();
+  }
+
+/* ===== AMBIL JUMLAH SERVER ===== */
+async function countServers() {
+  const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
+
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    serverCount = j.status ? j.servers.length : 0;
+    document.getElementById('totalServers').innerText = serverCount;
+  } catch {
+    serverCount = 0;
+    document.getElementById('totalServers').innerText = '-';
+  }
+  updateChart();
+}
+
+/* ===== PANGGIL SAAT DASHBOARD DIBUKA ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  countUsers();
+  countServers(); // parallel
+});
+
+
+
+/* ===== PANGGIL SAAT HALAMAN DASHBOARD DIBUKA ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  countUsers();
+  countServers(); // boleh parallel
+});
+
+/* ===== FUNGSI BUAT ADMIN ===== */
 async function createAdmin() {
   const username = document.getElementById('adminUser').value.trim();
   const tele     = document.getElementById('adminTele').value.trim();
@@ -1086,19 +962,21 @@ async function createAdmin() {
     const data = await res.json();
 
     if (data.status) {
+      // tampilkan hasil
       document.getElementById('creator').innerText     = data.creator;
       document.getElementById('resUsername').innerText = data.data.attributes.username;
-      document.getElementById('password').innerText    = data.data.attributes.username;
+      document.getElementById('password').innerText    = data.data.attributes.username; // atau password asli jika API kirim
       document.getElementById('email').innerText       = data.data.attributes.email;
       document.getElementById('domain').innerText      = DOMAIN;
 
-      if (tele && BOT_TOKEN) {
+      // kirim notifikasi telegram (opsional)
+      if (tele) {
         const msg = `✅ Admin panel baru dibuat!\n\nUsername: ${username}\nDomain: ${DOMAIN}`;
         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chat_id: tele, text: msg })
-        }).catch(() => {});
+        }).catch(() => {}); // silent fail
       }
 
       document.getElementById('resultAdmin').style.display = 'block';
@@ -1112,24 +990,27 @@ async function createAdmin() {
   }
 }
 
+/* ===== RESET FORM ===== */
 function resetAdminForm() {
   document.getElementById('resultAdmin').style.display  = 'none';
   document.getElementById('loadingAdmin').style.display = 'none';
   document.getElementById('adminUser').value = '';
   document.getElementById('adminTele').value = '';
-}
+  }
 
-/* ========== CLEAR SERVER & USER ========== */
+  
+/* ===== FUNGSI CLEAR SERVER ===== */
 async function clearServer() {
-  if (!confirm('Yakin ingin menghapus SEMUA server? Tindakan ini tidak dapat dibatalkan.')) return;
-
   const loading = document.getElementById('loadingClear');
   const result  = document.getElementById('resultClear');
+
+  // konfirmasi ulang
+  if (!confirm('Yakin ingin menghapus SEMUA server? Tindakan ini tidak dapat dibatalkan.')) return;
 
   loading.style.display = 'block';
   result.style.display  = 'none';
 
-  const url = `https://api.resellergaming.my.id/pterodactyl/clearserver?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
+  const url = `https://api.nvidiabotz.xyz/pterodactyl/clearserver?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
 
   try {
     const res  = await fetch(url);
@@ -1137,6 +1018,7 @@ async function clearServer() {
 
     if (res.ok && data.success) {
       showResult('success', '✅ Semua server berhasil dibersihkan!');
+      // opsional: reload data server
       setTimeout(() => countServers(), 1500);
     } else {
       showResult('error', data.message || 'Gagal membersihkan server.');
@@ -1148,168 +1030,132 @@ async function clearServer() {
   }
 }
 
-async function clearUsers() {
-  if (!confirm('Yakin ingin menghapus SEMUA user panel? Tindakan ini tidak dapat dibatalkan.')) return;
-
-  const loading = document.getElementById('loadingClear');
-  const result  = document.getElementById('resultClear');
-
-  loading.style.display = 'block';
-  result.style.display  = 'none';
-
-  const url = `https://api.resellergaming.my.id/pterodactyl/clearuser?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
-
-  try {
-    const res  = await fetch(url);
-    const data = await res.json();
-
-    result.innerHTML = `
-      <p><strong>Creator:</strong> ${data.creator}</p>
-      <p><strong>Status:</strong> <span class="status ${data.status}">${data.status ? 'Success' : 'Failed'}</span></p>
-      <p><strong>Message:</strong> ${data.message}</p>
-      <p><strong>Total Deleted:</strong> ${data.total_deleted}</p>
-    `;
-    result.style.display = 'block';
-
-    if (data.status) setTimeout(() => countUsers(), 1500);
-  } catch (err) {
-    showResult('error', 'Terjadi kesalahan: ' + err.message);
-  } finally {
-    loading.style.display = 'none';
-  }
-}
-
+/* ===== TAMPILKAN HASIL ===== */
 function showResult(type, msg) {
   const result = document.getElementById('resultClear');
   result.className = 'result ' + type;
   result.textContent = msg;
   result.style.display = 'block';
-}
-
-/* ========== LIST USER ========== */
-async function fetchUsers() {
-  const loading = document.getElementById('loadingUser');
-  const tbody   = document.querySelector('#userTable tbody');
-
-  loading.style.display = 'block';
-  tbody.innerHTML = '';
-
-  try {
-    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/listuser?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`);
-    const json = await res.json();
-
-    if (!json.status) throw new Error(json.message || 'Gagal memuat user');
-
-    json.users.forEach(u => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${u.id}</td>
-        <td>${u.username}</td>
-        <td>${u.email}</td>
-        <td>${u.admin ? 'Yes' : 'No'}</td>
-        <td><button class="btn-del" onclick="deleteUser(${u.id})">Delete</button></td>`;
-      tbody.appendChild(tr);
-    });
-  } catch (err) {
-    alert('Error: ' + err.message);
-  } finally {
-    loading.style.display = 'none';
   }
+  
+/* ========== EVENT LISTENER ========== */
+document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
+</script>
+/* ---------- Mini-Bar Dashboard ---------- */
+const barGroup   = document.getElementById('barGroup');
+const btnPlay    = document.getElementById('btnPlay');
+const barColor   = document.getElementById('barColor');
+const txtUser    = document.getElementById('txtUser');
+const txtServer  = document.getElementById('txtServer');
+
+let barUser = 0, barServer = 0;   // nilai visual (animasi)
+let maxH    = 280;                // px tinggi area batang
+
+function renderBar() {
+  barGroup.innerHTML = '';
+  const max  = Math.max(userCount, serverCount, 1);
+  const wBar = 60;
+  const gap = 40;
+  const xUser = 0;
+  const xServ = xUser + wBar + gap;
+
+  // batang USER
+  const uRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  uRect.setAttribute('x', xUser);
+  uRect.setAttribute('y', maxH);
+  uRect.setAttribute('width', wBar);
+  uRect.setAttribute('height', 0);
+  uRect.setAttribute('fill', 'url(#barGrad)');
+  uRect.setAttribute('rx', 8);
+  uRect.setAttribute('data-target-y', maxH - (barUser/maxH)*maxH);
+  uRect.setAttribute('data-target-h', (barUser/maxH)*maxH);
+  barGroup.appendChild(uRect);
+
+  // batang SERVER
+  const sRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  sRect.setAttribute('x', xServ);
+  sRect.setAttribute('y', maxH);
+  sRect.setAttribute('width', wBar);
+  sRect.setAttribute('height', 0);
+  sRect.setAttribute('fill', 'url(#barGrad)');
+  sRect.setAttribute('rx', 8);
+  sRect.setAttribute('data-target-y', maxH - (barServer/maxH)*maxH);
+  sRect.setAttribute('data-target-h', (barServer/maxH)*maxH);
+  barGroup.appendChild(sRect);
+
+  // label bawah
+  ['User','Server'].forEach((lab,i)=>{
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', i===0? xUser+wBar/2 : xServ+wBar/2);
+    t.setAttribute('y', maxH+18);
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','12');
+    t.setAttribute('fill','rgba(255,255,255,.7)');
+    t.textContent = lab;
+    barGroup.appendChild(t);
+  });
 }
 
-async function deleteUser(id) {
-  if (!confirm(`Hapus user ID ${id}?`)) return;
-
-  const loading = document.getElementById('loadingUser');
-  const result  = document.getElementById('resultUser');
-
-  loading.style.display = 'block';
-  result.style.display  = 'none';
-
-  try {
-    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/delpanel?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}&id=${id}`);
-    const data = await res.json();
-
-    document.getElementById('creator').textContent = data.creator;
-    document.getElementById('status').textContent   = data.status ? 'Success' : 'Failed';
-    document.getElementById('status').className     = data.status ? 'status true' : 'status false';
-    document.getElementById('message').textContent  = data.message;
-    document.getElementById('servers').textContent  = data.total_servers_deleted;
-    result.style.display = 'block';
-
-    if (data.status) fetchUsers();
-  } catch (err) {
-    alert('Error: ' + err.message);
-  } finally {
-    loading.style.display = 'none';
-  }
+function animateBar() {
+  const rects = barGroup.querySelectorAll('rect');
+  rects.forEach((r,idx)=>{
+    const targetH = parseFloat(r.getAttribute('data-target-h'));
+    const targetY = parseFloat(r.getAttribute('data-target-y'));
+    const start = performance.now() + idx*120;
+    const dur   = 800;
+    function frame(t){
+      const el  = t - start;
+      if(el<0){ requestAnimationFrame(frame); return; }
+      const p   = Math.min(1, el/dur);
+      const ease= 1 - Math.pow(1-p,3);
+      const h   = ease * targetH;
+      const y   = maxH - h;
+      r.setAttribute('height', h);
+      r.setAttribute('y', y);
+      if(p<1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  });
 }
 
-function closeUserResult() {
-  document.getElementById('resultUser').style.display = 'none';
-}
-
-/* ========== GRAFIK & COUNTER ========== */
-let userCount   = 0;
-let serverCount = 0;
-
-function updateChart() {
-  const max = Math.max(userCount, serverCount, 1);
-  const userPct = (userCount / max) * 100;
-  const serverPct = (serverCount / max) * 100;
-
-  const userBar = document.querySelector('.bar[data-label="User"]');
-  const serverBar = document.querySelector('.bar[data-label="Server"]');
-
-  // Set custom property untuk animasi
-  userBar.style.setProperty('--final-height', userPct + '%');
-  serverBar.style.setProperty('--final-height', serverPct + '%');
-
-  // Update angka di bawah batang
-  document.getElementById('userCount').innerText = userCount;
-  document.getElementById('serverCount').innerText = serverCount;
-  }
-
-  setTimeout(() => {
-  serverBar.style.setProperty('--final-height', serverPct + '%');
-}, 200);
-
-async function countUsers() {
-  try {
-    const token = localStorage.getItem("admin_token");
-    const res   = await fetch("/api/users", {
-      headers: { Authorization: "Bearer " + token }
-    });
-    const data  = await res.json();
-    userCount = data.length;
-    document.getElementById('totalUsers').innerText = userCount;
-  } catch {
-    userCount = 0;
-    document.getElementById('totalUsers').innerText = '-';
-  }
-  updateChart();
-}
-
-async function countServers() {
-  const url = `https://api.resellergaming.my.id/pterodactyl/listserver?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`;
-
-  try {
-    const r = await fetch(url);
-    const j = await r.json();
-    serverCount = j.status ? j.servers.length : 0;
-    document.getElementById('totalServers').innerText = serverCount;
-  } catch {
-    serverCount = 0;
-    document.getElementById('totalServers').innerText = '-';
-  }
-  updateChart();
-}
-
-/* ========== INIT ========== */
-document.addEventListener('DOMContentLoaded', () => {
-  countUsers();
-  countServers();
+// warna dinamis
+barColor.addEventListener('input',()=>{
+  const c1 = barColor.value;
+  const c2 = shadeColor(c1,-30);
+  document.querySelector('#barGrad stop:nth-child(1)').setAttribute('stop-color',c1);
+  document.querySelector('#barGrad stop:nth-child(2)').setAttribute('stop-color',c2);
 });
+function shadeColor(hex,percent){
+  const num=parseInt(hex.slice(1),16);
+  const r=Math.min(255,Math.max(0,(num>>16)+percent));
+  const g=Math.min(255,Math.max(0,((num>>8)&0x00FF)+percent));
+  const b=Math.min(255,Math.max(0,(num&0x0000FF)+percent));
+  return '#' + (0x1000000+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+
+// tombol animasi
+btnPlay.addEventListener('click',()=>animateBar());
+
+/* hubungkan ke counter Anda yg sudah ada */
+function updateDashboardBar(){
+  // update angka
+  txtUser.textContent   = userCount;
+  txtServer.textContent = serverCount;
+  // siapkan nilai animasi
+  barUser   = userCount;
+  barServer = serverCount;
+  renderBar();
+  // auto-play (opsional)
+  setTimeout(animateBar,300);
+}
+
+/* panggil setelah countUsers & countServers selesai */
+document.addEventListener('DOMContentLoaded',()=>{
+  // Anda sudah punya: countUsers() & countServers()
+  // tambahkan ini:
+  setTimeout(updateDashboardBar,1500); // beri jeda biar data siap
+});
+<script>
 </script>
 </body>
 </html>
