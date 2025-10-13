@@ -293,41 +293,54 @@
   color: #ff9800;
 }
   </style>
-  <style>
-/* ===== CLEAR SERVER STYLE ===== */
+<style>
+/* ===== CLEAR PAGE STYLE ===== */
 #clearserver .card {
   background: #1e1e1e;
   color: #fff;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.25);
-  border-radius: 15px;
-  padding: 40px 30px;
+  box-shadow: 0 0 25px rgba(255, 82, 82, 0.25);
+  border-radius: 16px;
+  padding: 40px;
 }
 #clearserver h2 {
   margin-bottom: 20px;
   font-weight: 600;
+  color: #ff5252;
 }
 #clearserver .warning-box {
-  background: rgba(255, 152, 0, 0.15);
-  border: 1px solid #ff9800;
-  border-radius: 8px;
+  background: #ff525222;
+  border-left: 5px solid #ff5252;
   padding: 15px;
   margin-bottom: 25px;
+  border-radius: 8px;
   font-size: 14px;
-  color: #ff9800;
+  color: #ffcdd2;
 }
-#clearserver button {
+#clearserver .warning-box.user {
+  border-color: #f44336;
+  background: #f4433622;
+  color: #ffcdd2;
+}
+#clearserver .btn-danger {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border: none;
   border-radius: 8px;
-  background: #dc3545;
-  color: #fff;
-  font-size: 1rem;
+  background: #ff5252;
+  color: #000;
+  font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
-  transition: background .3s;
+  transition: background .3s ease;
 }
-#clearserver button:hover {
-  background: #c82333;
+#clearserver .btn-danger.user {
+  background: #f44336;
+}
+#clearserver .btn-danger:hover {
+  background: #ff7474;
+}
+#clearserver .btn-danger.user:hover {
+  background: #ff6659;
 }
 #clearserver .loading {
   display: none;
@@ -335,11 +348,11 @@
   margin-top: 20px;
 }
 #clearserver .spinner {
+  border: 4px solid #2a2a2a;
+  border-top: 4px solid #ff5252;
+  border-radius: 50%;
   width: 40px;
   height: 40px;
-  border: 4px solid #ffffff33;
-  border-top: 4px solid #fff;
-  border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 10px;
 }
@@ -347,35 +360,186 @@
   to { transform: rotate(360deg); }
 }
 #clearserver .result {
+  display: none;
   margin-top: 25px;
+  font-size: 14px;
+  background: #2a2a2a;
   padding: 15px;
   border-radius: 8px;
+}
+#clearserver .result p {
+  margin: 6px 0;
+}
+#clearserver .status.true {
+  color: #4caf50;
+}
+#clearserver .status.false {
+  color: #f44336;
+}
+</style>
+<style>
+/* ===== LIST USER STYLE ===== */
+#listuser .card {
+  background: #1e1e1e;
+  color: #fff;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 25px;
+}
+#listuser h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #00bcd4;
+}
+#listuser table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+#listuser th,
+#listuser td {
+  padding: 10px;
+  text-align: left;
+}
+#listuser th {
+  background: #2a2a2a;
+  color: #00bcd4;
+}
+#listuser tr:nth-child(even) {
+  background: #252525;
+}
+#listuser .btn-del {
+  background: #ff5252;
+  color: #000;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+#listuser .btn-del:hover {
+  background: #ff7474;
+}
+#listuser .loading {
   display: none;
-  font-weight: 600;
+  text-align: center;
+  margin: 20px 0;
 }
-#clearserver .success {
-  background: var(--success);
-  color: #fff;
+#listuser .spinner {
+  border: 4px solid #2a2a2a;
+  border-top: 4px solid #00bcd4;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
 }
-#clearserver .error {
-  background: var(--danger);
-  color: #fff;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
-  </style>
+#listuser .result-box {
+  display: none;
+  margin-top: 25px;
+  background: #2a2a2a;
+  padding: 15px;
+  border-radius: 8px;
+  position: relative;
+}
+#listuser .close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 20px;
+  color: #ffcdd2;
+  cursor: pointer;
+}
+</style>
+<style>
+/* ===== TABEL USER STYLE ===== */
+#userTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 10px;
+}
+#userTable th,
+#userTable td {
+  padding: 10px;
+  text-align: left;
+}
+#userTable th {
+  background: #2a2a2a;
+  color: #00bcd4;
+}
+#userTable tr:nth-child(even) {
+  background: #252525;
+}
+#userTable .btn-del {
+  background: #ff5252;
+  color: #000;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+#userTable .btn-del:hover {
+  background: #ff7474;
+}
+#userTable .loading {
+  display: none;
+  text-align: center;
+  margin: 20px 0;
+}
+#userTable .spinner {
+  border: 4px solid #2a2a2a;
+  border-top: 4px solid #00bcd4;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+#userTable .result-box {
+  display: none;
+  margin-top: 25px;
+  background: #2a2a2a;
+  padding: 15px;
+  border-radius: 8px;
+  position: relative;
+}
+#userTable .close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 20px;
+  color: #ffcdd2;
+  cursor: pointer;
+}
+#userTable .total-admin {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #00bcd4;
+}
+</style>
 </head>
 <body>
 
 <aside id="sidebar">
   <h2>Admin Panel</h2>
-  <nav>
-    <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
-    <button class="nav-btn" data-page="server">🖥 Server</button>
-    <button class="nav-btn" data-page="reseller">👤 Reseller</button>
-    <button class="nav-btn" data-page="create">➕ Create User</button>
-    <button class="nav-btn" data-page="createpanel">🧩 Create Panel</button>
-    <button class="nav-btn" data-page="createadmin">🔐 Create Admin</button>
-    <button class="nav-btn" data-page="clearserver">🗑 Clear Server</button>
-  </nav>
+<nav>
+  <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+  <button class="nav-btn" data-page="server">🖥 Server</button>
+  <button class="nav-btn" data-page="reseller">👤 Reseller</button>
+  <button class="nav-btn" data-page="create">➕ Create User</button>
+  <button class="nav-btn" data-page="createpanel">🧩 Create Panel</button>
+  <button class="nav-btn" data-page="createadmin">🔐 Create Admin</button>
+  <button class="nav-btn" data-page="clearserver">🗑 Clear Server</button>
+  <button class="nav-btn" data-page="listuser">📋 List User</button>
+</nav>
 </aside>
 
 <main id="main">
@@ -418,6 +582,42 @@
       <div class="label">Baterai</div>
     </div>
   </div>
+  
+  <!-- ===== TABEL USER PANEL ===== -->
+<div class="card" style="margin-top:30px;">
+  <h3>📋 List User Panel Pterodactyl</h3>
+  <div class="loading" id="loadingUser">
+    <div class="spinner"></div>
+    <p>Memuat user...</p>
+  </div>
+
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Admin</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Total Admin (Otomatis) -->
+  <div class="total-admin" style="margin-top:15px;font-size:14px;color:#00bcd4;">
+    Total Admin: <b id="totalAdmin">0</b>
+  </div>
+
+  <!-- Hasil Delete -->
+  <div class="result-box" id="resultUser" style="display:none;">
+    <span class="close" onclick="closeUserResult()">&times;</span>
+    <p><strong>Creator:</strong> <span id="creator"></span></p>
+    <p><strong>Status:</strong> <span id="status"></span></p>
+    <p><strong>Message:</strong> <span id="message"></span></p>
+    <p><strong>Servers Deleted:</strong> <span id="servers"></span></p>
+  </div>
+</div>
 
   <!-- Grafik Batang (AKAN DIISI OTOMATIS) -->
   <div class="card" style="margin-top:30px;">
@@ -565,28 +765,68 @@
   </div>
 </div>
 
-<!-- ===== CLEAR SERVER ===== -->
+<!-- ===== CLEAR SERVER & CLEAR USER ===== -->
 <div class="page" id="clearserver">
   <div class="card" style="max-width:480px;margin:0 auto;text-align:center;">
-    <h2>Clear Server</h2>
 
-    <!-- WARNING -->
+    <!-- CLEAR SERVER -->
+    <h2>🗑 Clear Server</h2>
     <div class="warning-box">
       ⚠️ <strong>WARNING</strong> ⚠️<br>
       Sebelum clear all server / membersihkan semua server harap pikir kembali dan ini hanya membersihkan server bukan dengan user, sekian terima ☺️
     </div>
+    <button class="btn-danger" onclick="clearServer()">Clear Server</button>
 
-    <!-- TOMBOL CLEAR -->
-    <button onclick="clearServer()">Clear Server</button>
+    <!-- CLEAR USER PANEL -->
+    <h2 style="margin-top:40px;">👤 Clear All Users</h2>
+    <div class="warning-box user">
+      ⚠️ <strong>WARNING</strong> ⚠️<br>
+      Ini akan menghapus SEMUA user panel Pterodactyl. Tindakan tidak dapat dibatalkan.
+    </div>
+    <button class="btn-danger user" onclick="clearUsers()">Clear All Users</button>
 
-    <!-- LOADING -->
+    <!-- LOADING & HASIL -->
     <div class="loading" id="loadingClear">
       <div class="spinner"></div>
-      <p>Menghapus server, harap tunggu...</p>
+      <p>Memproses...</p>
+    </div>
+    <div class="result" id="resultClear"></div>
+  </div>
+</div>
+
+<!-- ===== LIST USER PANEL ===== -->
+<div class="page" id="listuser">
+  <div class="card" style="max-width:900px;margin:0 auto;">
+    <h2>List User Pterodactyl</h2>
+
+    <!-- Loading -->
+    <div class="loading" id="loadingUser">
+      <div class="spinner"></div>
+      <p>Memuat user...</p>
     </div>
 
-    <!-- HASIL -->
-    <div class="result" id="resultClear"></div>
+    <!-- Tabel -->
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Admin</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Hasil Delete -->
+    <div class="result-box" id="resultUser" style="display:none;">
+      <span class="close" onclick="closeUserResult()">&times;</span>
+      <p><strong>Creator:</strong> <span id="creator"></span></p>
+      <p><strong>Status:</strong> <span id="status"></span></p>
+      <p><strong>Message:</strong> <span id="message"></span></p>
+      <p><strong>Servers Deleted:</strong> <span id="servers"></span></p>
+    </div>
   </div>
 </div>
 </main>
@@ -983,46 +1223,231 @@ function resetAdminForm() {
 
   
 /* ===== FUNGSI CLEAR SERVER ===== */
-async function clearServer() {
-  const loading = document.getElementById('loadingClear');
-  const result  = document.getElementById('resultClear');
+‎async function clearServer() {
+‎  if (!confirm('Yakin ingin menghapus SEMUA server? Tindakan ini tidak dapat dibatalkan.')) return;
+‎
+‎  const loading = document.getElementById('loadingClear');
+‎  const result  = document.getElementById('resultClear');
+‎
+‎  loading.style.display = 'block';
+‎  result.style.display  = 'none';
+‎
+‎  const url = `https://api.resellergaming.my.id/pterodactyl/clearserver?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
+‎
+‎  try {
+‎    const res  = await fetch(url);
+‎    const data = await res.json();
+‎
+‎    if (res.ok && data.success) {
+‎      showResult('success', '✅ Semua server berhasil dibersihkan!');
+‎      setTimeout(() => countServers(), 1500); // reload jumlah server
+‎    } else {
+‎      showResult('error', data.message || 'Gagal membersihkan server.');
+‎    }
+‎  } catch (err) {
+‎    showResult('error', 'Terjadi kesalahan jaringan / API tidak tersedia.');
+‎  } finally {
+‎    loading.style.display = 'none';
+‎  }
+‎}
+‎
+‎/* ===== FUNGSI CLEAR USER PANEL ===== */
+‎async function clearUsers() {
+‎  if (!confirm('Yakin ingin menghapus SEMUA user panel? Tindakan ini tidak dapat dibatalkan.')) return;
+‎
+‎  const loading = document.getElementById('loadingClear');
+‎  const result  = document.getElementById('resultClear');
+‎
+‎  loading.style.display = 'block';
+‎  result.style.display  = 'none';
+‎
+‎  const url = `https://api.resellergaming.my.id/pterodactyl/clearuser?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
+‎
+‎  try {
+‎    const res  = await fetch(url);
+‎    const data = await res.json();
+‎
+‎    document.getElementById('resultClear').innerHTML = `
+‎      <p><strong>Creator:</strong> ${data.creator}</p>
+‎      <p><strong>Status:</strong> <span class="status ${data.status}">${data.status ? 'Success' : 'Failed'}</span></p>
+‎      <p><strong>Message:</strong> ${data.message}</p>
+‎      <p><strong>Total Deleted:</strong> ${data.total_deleted}</p>
+‎    `;
+‎    result.style.display = 'block';
+‎
+‎    if (data.status) setTimeout(() => countUsers(), 1500); // reload jumlah user
+‎  } catch (err) {
+‎    showResult('error', 'Terjadi kesalahan: ' + err.message);
+‎  } finally {
+‎    loading.style.display = 'none';
+‎  }
+‎}
+‎
+‎/* ===== TAMPILKAN HASIL ===== */
+‎function showResult(type, msg) {
+‎  const result = document.getElementById('resultClear');
+‎  result.className = 'result ' + type;
+‎  result.textContent = msg;
+‎  result.style.display = 'block';
+‎}
 
-  // konfirmasi ulang
-  if (!confirm('Yakin ingin menghapus SEMUA server? Tindakan ini tidak dapat dibatalkan.')) return;
+
+/* ===== AMBIL LIST USER ===== */
+async function fetchUsers() {
+  const loading = document.getElementById('loadingUser');
+  const tbody   = document.querySelector('#userTable tbody');
 
   loading.style.display = 'block';
-  result.style.display  = 'none';
-
-  const url = `https://api.nvidiabotz.xyz/pterodactyl/clearserver?domain=${encodeURIComponent(DOMAIN)}&plta=${encodeURIComponent(PLTA)}`;
+  tbody.innerHTML = '';
 
   try {
-    const res  = await fetch(url);
-    const data = await res.json();
+    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/listuser?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}`);
+    const json = await res.json();
 
-    if (res.ok && data.success) {
-      showResult('success', '✅ Semua server berhasil dibersihkan!');
-      // opsional: reload data server
-      setTimeout(() => countServers(), 1500);
-    } else {
-      showResult('error', data.message || 'Gagal membersihkan server.');
-    }
+    if (!json.status) throw new Error(json.message || 'Gagal memuat user');
+
+    json.users.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${u.id}</td>
+        <td>${u.username}</td>
+        <td>${u.email}</td>
+        <td>${u.admin ? 'Yes' : 'No'}</td>
+        <td><button class="btn-del" onclick="deleteUser(${u.id})">Delete</button></td>`;
+      tbody.appendChild(tr);
+    });
   } catch (err) {
-    showResult('error', 'Terjadi kesalahan jaringan / API tidak tersedia.');
+    alert('Error: ' + err.message);
   } finally {
     loading.style.display = 'none';
   }
 }
 
-/* ===== TAMPILKAN HASIL ===== */
-function showResult(type, msg) {
-  const result = document.getElementById('resultClear');
-  result.className = 'result ' + type;
-  result.textContent = msg;
-  result.style.display = 'block';
+/* ===== DELETE USER ===== */
+async function deleteUser(id) {
+  if (!confirm(`Hapus user ID ${id}?`)) return;
+
+  const loading = document.getElementById('loadingUser');
+  const result  = document.getElementById('resultUser');
+
+  loading.style.display = 'block';
+  result.style.display  = 'none';
+
+  try {
+    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/delpanel?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}&id=${id}`);
+    const data = await res.json();
+
+    document.getElementById('creator').textContent = data.creator;
+    document.getElementById('status').textContent   = data.status ? 'Success' : 'Failed';
+    document.getElementById('status').className     = data.status ? 'status true' : 'status false';
+    document.getElementById('message').textContent  = data.message;
+    document.getElementById('servers').textContent  = data.total_servers_deleted;
+    result.style.display = 'block';
+
+    if (data.status) fetchUsers(); // reload tabel
+  } catch (err) {
+    alert('Error: ' + err.message);
+  } finally {
+    loading.style.display = 'none';
   }
+}
+
+/* ===== TUTUP HASIL ===== */
+function closeUserResult() {
+  document.getElementById('resultUser').style.display = 'none';
+}
+
+/* ===== PANGGIL SAAT HALAMAN DIBUKA ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  fetchUsers();
+});
   
 /* ========== EVENT LISTENER ========== */
 document.querySelector('[data-page="server"]').addEventListener('click', loadServers);
+</script>
+<script>
+/* ===== KONFIG ===== */
+const DOMAIN_USER = "https://publik.jhonaley.net"; // ganti
+const PLTA_USER   = "ptla_9JhxzZce7Bg9GsZdQEXqlF4razNhqjLNSv8OIuUcg9c"; // ganti
+
+let adminCount = 0;
+
+/* ===== AMBIL LIST USER + HITUNG TOTAL ADMIN ===== */
+async function fetchUsers() {
+  const loading = document.getElementById('loadingUser');
+  const tbody   = document.querySelector('#userTable tbody');
+
+  loading.style.display = 'block';
+  tbody.innerHTML = '';
+
+  try {
+    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/listuser?domain=${encodeURIComponent(DOMAIN_USER)}&plta=${PLTA_USER}`);
+    const json = await res.json();
+
+    if (!json.status) throw new Error(json.message || 'Gagal memuat user');
+
+    adminCount = 0; // reset
+
+    json.users.forEach(u => {
+      if (u.admin) adminCount++;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${u.id}</td>
+        <td>${u.username}</td>
+        <td>${u.email}</td>
+        <td>${u.admin ? 'Yes' : 'No'}</td>
+        <td><button class="btn-del" onclick="deleteUser(${u.id})">Delete</button></td>`;
+      tbody.appendChild(tr);
+    });
+
+    // Tampilkan total admin
+    document.getElementById('totalAdmin').innerText = adminCount;
+  } catch (err) {
+    alert('Error: ' + err.message);
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+/* ===== DELETE USER ===== */
+async function deleteUser(id) {
+  if (!confirm(`Hapus user ID ${id}?`)) return;
+
+  const loading = document.getElementById('loadingUser');
+  const result  = document.getElementById('resultUser');
+
+  loading.style.display = 'block';
+  result.style.display  = 'none';
+
+  try {
+    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/delpanel?domain=${encodeURIComponent(DOMAIN_USER)}&plta=${PLTA_USER}&id=${id}`);
+    const data = await res.json();
+
+    document.getElementById('creator').textContent = data.creator;
+    document.getElementById('status').textContent   = data.status ? 'Success' : 'Failed';
+    document.getElementById('status').className     = data.status ? 'status true' : 'status false';
+    document.getElementById('message').textContent  = data.message;
+    document.getElementById('servers').textContent  = data.total_servers_deleted;
+    result.style.display = 'block';
+
+    if (data.status) fetchUsers(); // reload tabel + hitung ulang admin
+  } catch (err) {
+    alert('Error: ' + err.message);
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+/* ===== TUTUP HASIL ===== */
+function closeUserResult() {
+  document.getElementById('resultUser').style.display = 'none';
+}
+
+/* ===== PANGGIL SAAT HALAMAN DIBUKA ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  fetchUsers();
+});
 </script>
 </body>
 </html>
