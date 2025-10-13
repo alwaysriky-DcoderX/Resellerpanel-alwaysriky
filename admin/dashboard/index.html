@@ -524,6 +524,19 @@
   font-size: 14px;
   color: #00bcd4;
 }
+
+@keyframes growUp {
+  from {
+    height: 0%;
+  }
+  to {
+    height: var(--final-height);
+  }
+}
+
+.bar {
+  animation: growUp 1s ease-out forwards;
+  }
 </style>
 </head>
 <body>
@@ -1241,16 +1254,25 @@ let userCount   = 0;
 let serverCount = 0;
 
 function updateChart() {
-  const max       = Math.max(userCount, serverCount, 1);
-  const userPct   = (userCount / max) * 100;
+  const max = Math.max(userCount, serverCount, 1);
+  const userPct = (userCount / max) * 100;
   const serverPct = (serverCount / max) * 100;
 
-  document.querySelector('.bar[data-label="User"]').style.height   = userPct + '%';
-  document.querySelector('.bar[data-label="Server"]').style.height = serverPct + '%';
+  const userBar = document.querySelector('.bar[data-label="User"]');
+  const serverBar = document.querySelector('.bar[data-label="Server"]');
 
-  document.getElementById('userCount').innerText   = userCount;
+  // Set custom property untuk animasi
+  userBar.style.setProperty('--final-height', userPct + '%');
+  serverBar.style.setProperty('--final-height', serverPct + '%');
+
+  // Update angka di bawah batang
+  document.getElementById('userCount').innerText = userCount;
   document.getElementById('serverCount').innerText = serverCount;
-}
+  }
+
+  setTimeout(() => {
+  serverBar.style.setProperty('--final-height', serverPct + '%');
+}, 200);
 
 async function countUsers() {
   try {
