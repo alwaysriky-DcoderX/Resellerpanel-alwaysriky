@@ -1156,6 +1156,120 @@ document.addEventListener('DOMContentLoaded',()=>{
   setTimeout(updateDashboardBar,1500); // beri jeda biar data siap
 });
 <script>
+/* ---------- Mini-Bar Dashboard ---------- */
+const barGroup   = document.getElementById('barGroup');
+const btnPlay    = document.getElementById('btnPlay');
+const barColor   = document.getElementById('barColor');
+const txtUser    = document.getElementById('txtUser');
+const txtServer  = document.getElementById('txtServer');
+
+let barUser = 0, barServer = 0;   // nilai visual (animasi)
+let maxH    = 280;                // px tinggi area batang
+
+function renderBar() {
+  barGroup.innerHTML = '';
+  const max  = Math.max(userCount, serverCount, 1);
+  const wBar = 60;
+  const gap = 40;
+  const xUser = 0;
+  const xServ = xUser + wBar + gap;
+
+  // batang USER
+  const uRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  uRect.setAttribute('x', xUser);
+  uRect.setAttribute('y', maxH);
+  uRect.setAttribute('width', wBar);
+  uRect.setAttribute('height', 0);
+  uRect.setAttribute('fill', 'url(#barGrad)');
+  uRect.setAttribute('rx', 8);
+  uRect.setAttribute('data-target-y', maxH - (barUser/maxH)*maxH);
+  uRect.setAttribute('data-target-h', (barUser/maxH)*maxH);
+  barGroup.appendChild(uRect);
+
+  // batang SERVER
+  const sRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+  sRect.setAttribute('x', xServ);
+  sRect.setAttribute('y', maxH);
+  sRect.setAttribute('width', wBar);
+  sRect.setAttribute('height', 0);
+  sRect.setAttribute('fill', 'url(#barGrad)');
+  sRect.setAttribute('rx', 8);
+  sRect.setAttribute('data-target-y', maxH - (barServer/maxH)*maxH);
+  sRect.setAttribute('data-target-h', (barServer/maxH)*maxH);
+  barGroup.appendChild(sRect);
+
+  // label bawah
+  ['User','Server'].forEach((lab,i)=>{
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', i===0? xUser+wBar/2 : xServ+wBar/2);
+    t.setAttribute('y', maxH+18);
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','12');
+    t.setAttribute('fill','rgba(255,255,255,.7)');
+    t.textContent = lab;
+    barGroup.appendChild(t);
+  });
+}
+
+function animateBar() {
+  const rects = barGroup.querySelectorAll('rect');
+  rects.forEach((r,idx)=>{
+    const targetH = parseFloat(r.getAttribute('data-target-h'));
+    const targetY = parseFloat(r.getAttribute('data-target-y'));
+    const start = performance.now() + idx*120;
+    const dur   = 800;
+    function frame(t){
+      const el  = t - start;
+      if(el<0){ requestAnimationFrame(frame); return; }
+      const p   = Math.min(1, el/dur);
+      const ease= 1 - Math.pow(1-p,3);
+      const h   = ease * targetH;
+      const y   = maxH - h;
+      r.setAttribute('height', h);
+      r.setAttribute('y', y);
+      if(p<1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  });
+}
+
+// warna dinamis
+barColor.addEventListener('input',()=>{
+  const c1 = barColor.value;
+  const c2 = shadeColor(c1,-30);
+  document.querySelector('#barGrad stop:nth-child(1)').setAttribute('stop-color',c1);
+  document.querySelector('#barGrad stop:nth-child(2)').setAttribute('stop-color',c2);
+});
+function shadeColor(hex,percent){
+  const num=parseInt(hex.slice(1),16);
+  const r=Math.min(255,Math.max(0,(num>>16)+percent));
+  const g=Math.min(255,Math.max(0,((num>>8)&0x00FF)+percent));
+  const b=Math.min(255,Math.max(0,(num&0x0000FF)+percent));
+  return '#' + (0x1000000+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+
+// tombol animasi
+btnPlay.addEventListener('click',()=>animateBar());
+
+/* hubungkan ke counter Anda yg sudah ada */
+function updateDashboardBar(){
+  // update angka
+  txtUser.textContent   = userCount;
+  txtServer.textContent = serverCount;
+  // siapkan nilai animasi
+  barUser   = userCount;
+  barServer = serverCount;
+  renderBar();
+  // auto-play (opsional)
+  setTimeout(animateBar,300);
+}
+
+/* panggil setelah countUsers & countServers selesai */
+document.addEventListener('DOMContentLoaded',()=>{
+  // Anda sudah punya: countUsers() & countServers()
+  // tambahkan ini:
+  setTimeout(updateDashboardBar,1500); // beri jeda biar data siap
+});
 </script>
 </body>
 </html>
