@@ -583,41 +583,6 @@
     </div>
   </div>
   
-  <!-- ===== TABEL USER PANEL ===== -->
-<div class="card" style="margin-top:30px;">
-  <h3>📋 List User Panel Pterodactyl</h3>
-  <div class="loading" id="loadingUser">
-    <div class="spinner"></div>
-    <p>Memuat user...</p>
-  </div>
-
-  <table id="userTable">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Admin</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <!-- Total Admin (Otomatis) -->
-  <div class="total-admin" style="margin-top:15px;font-size:14px;color:#00bcd4;">
-    Total Admin: <b id="totalAdmin">0</b>
-  </div>
-
-  <!-- Hasil Delete -->
-  <div class="result-box" id="resultUser" style="display:none;">
-    <span class="close" onclick="closeUserResult()">&times;</span>
-    <p><strong>Creator:</strong> <span id="creator"></span></p>
-    <p><strong>Status:</strong> <span id="status"></span></p>
-    <p><strong>Message:</strong> <span id="message"></span></p>
-    <p><strong>Servers Deleted:</strong> <span id="servers"></span></p>
-  </div>
-</div>
 
   <!-- Grafik Batang (AKAN DIISI OTOMATIS) -->
   <div class="card" style="margin-top:30px;">
@@ -952,7 +917,7 @@ async function loadResellers() {
         <td>${u.password}</td>
         <td>${new Date(u.created_at).toLocaleString()}</td>
         <td>
-          <button onclick="deleteUser('${u.username}')" style="background:#e74c3c;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Hapus</button>
+          <button onclick="deleteSeller('${u.username}')" style="background:#e74c3c;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Hapus</button>
         </td>`;
       tbody.appendChild(tr);
     });
@@ -1051,14 +1016,14 @@ async function buatPanel() {
 
   try {
     // 1. Buat panel
-    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/addpanel?domain=${encodeURIComponent(DOMAIN_PANEL)}&plta=${PLTA}&username=${username}&disk=${conf.disk}&cpu=${conf.cpu}`);
+    const res = await fetch(`https://api.resellergaming.my.id/pterodactyl/addpanel?domain=${encodeURIComponent(DOMAIN)}&plta=${PLTA}&username=${username}&disk=${conf.disk}&cpu=${conf.cpu}`);
     const data = await res.json();
 
     if (!data || !data.user) throw new Error('Gagal membuat panel');
 
     // 2. Kirim notifikasi Telegram (jika diisi)
     if (tele) {
-      const msg = `🎉 Panel baru dibuat!\n\nUsername: ${username}\nPaket: ${paket.toUpperCase()}\nLink: ${DOMAIN_PANEL}`;
+      const msg = `🎉 Panel baru dibuat!\n\nUsername: ${username}\nPaket: ${paket.toUpperCase()}\nLink: ${DOMAIN}`;
       await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1324,7 +1289,7 @@ async function fetchUsers() {
 }
 
 /* ===== DELETE USER ===== */
-async function deleteUser(id) {
+async function deleteSeller(id) {
   if (!confirm(`Hapus user ID ${id}?`)) return;
 
   const loading = document.getElementById('loadingUser');
