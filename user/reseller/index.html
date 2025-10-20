@@ -179,6 +179,7 @@
   <nav class="nav-links">
     <a href="#" data-page="dashboard" class="active">Dashboard</a>
     <a href="#" data-page="create">Create Panel</a>
+    <a href="#" data-page="history">Riwayat</a>
   </nav>
 </header>
 
@@ -226,22 +227,62 @@
       <button onclick="resetForm()">Kembali</button>
       <button onclick="logout()" style="margin-top:10px;">Logout</button>
     </div>
-  </section>
-</main>
 
-<!-- Loading -->
-<div id="loadingOverlay" class="loading-overlay">
-  <div class="loading-box">
-    <div class="spinner"></div>
-    Sedang membuat panel...
+    <!-- 5 Panel Terakhir -->
+    <div class="card" style="margin-top:20px">
+      <h3 style="font-size:18px;margin-bottom:10px">5 Panel Terakhir</h3>
+      <table id="recentTable" style="width:100%;font-size:13px;border-collapse:collapse">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="padding:6px">User</th>
+            <th style="padding:6px">Paket</th>
+            <th style="padding:6px">Waktu</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Riwayat Lengkap -->
+  <section id="history" class="page">
+    <div class="card">
+      <h2>Riwayat Create Panel</h2>
+      <p class="sub">Daftar panel yang pernah Anda buat di perangkat ini.</p>
+
+      <table id="historyTable" style="width:100%;font-size:14px;border-collapse:collapse;margin-top:12px">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="padding:8px 6px;text-align:left">#</th>
+            <th style="padding:8px 6px;text-align:left">Username</th>
+            <th style="padding:8px 6px;text-align:left">Paket</th>
+            <th style="padding:8px 6px;text-align:left">Email</th>
+            <th style="padding:8px 6px;text-align:left">Password</th>
+            <th style="padding:8px 6px;text-align:left">Waktu</th>
+            <th style="padding:8px 6px;text-align:left">Link</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button onclick="clearHistory()" style="margin-top:16px;background:#e94560">Hapus Riwayat</button>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      Sedang membuat panel...
+    </div>
   </div>
-</div>
+</main>
 
 <script>
 /* ========== SETTING  ========== */
-const DOMAIN = "https://panel-private.resellergaming-official.my.id"; // ganti dengan domain Anda
-const PLTA   = "ptla_B86xSaRPE5JNg1KxoglAPKyyqe5VHHH1JgwdxIfVK5s"; // ganti dengan plta Anda
-const BOT_TOKEN    = "8059431160:AAGP9ovlIOtefJ-ECCQKo5IfpnrJl13E2UU";  // ← taruh token Anda di sini
+const DOMAIN = "https://jazz-publik.fansjkt48.web.id"; // ganti dengan domain Anda
+const PLTA   = "ptla_uD1BRcUOAmwiYbdQs3JEGHlfnDy6Jocu3POOvfuXOBa"; // ganti dengan plta Anda
+const BOT_TOKEN    = "GANTI_DENGAN_TOKEN_BOT_ANDA";  // ← taruh token Anda di sini
 
 /* ---------- NAV ---------- */
 document.querySelectorAll('.nav-links a').forEach(link=>{
@@ -307,6 +348,14 @@ async function buatPanel(){
       document.getElementById('uname').innerText=u.username;
       document.getElementById('pass').innerText=u.password||u.username;
       document.getElementById('ram').innerText=paket.toUpperCase();
+      // SIMPAN KE RIWAYAT
+      saveHistory({
+        user:  u.username,
+        paket: paket.toUpperCase(),
+        email: u.email,
+        pass:  u.password||u.username,
+        time:  new Date().toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})
+      });
       alert('✅ Panel berhasil dibuat!');
     } else alert(`❌ Gagal: ${data?.error||'Unknown error'}`);
   } catch(e){
@@ -323,6 +372,47 @@ function resetForm(){
 function logout(){
   window.location.href='https://google.com';
 }
+
+/* ---------- RIWAYAT ---------- */
+function saveHistory(entry){
+  let list = JSON.parse(localStorage.getItem('panelHistory')||'[]');
+  list.unshift(entry);
+  localStorage.setItem('panelHistory',JSON.stringify(list));
+  renderHistory();
+  renderRecent();
+}
+function renderHistory(){
+  const tbody = document.querySelector('#historyTable tbody');
+  const list  = JSON.parse(localStorage.getItem('panelHistory')||'[]');
+  if(!list.length){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted)">Belum ada riwayat.</td></tr>'; return;}
+  tbody.innerHTML = list.map((h,i)=>`
+    <tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:8px 6px">${i+1}</td>
+      <td style="padding:8px 6px">${h.user}</td>
+      <td style="padding:8px 6px">${h.paket}</td>
+      <td style="padding:8px 6px">${h.email}</td>
+      <td style="padding:8px 6px">${h.pass}</td>
+      <td style="padding:8px 6px">${h.time}</td>
+      <td style="padding:8px 6px"><a href="https://domainpanel.resellergaming.my.id" target="_blank" style="color:var(--primary)">Buka</a></td>
+    </tr>`).join('');
+}
+function renderRecent(){
+  const tbody = document.querySelector('#recentTable tbody');
+  const list  = JSON.parse(localStorage.getItem('panelHistory')||'[]').slice(0,5);
+  tbody.innerHTML = list.map(h=>`
+    <tr>
+      <td style="padding:6px">${h.user}</td>
+      <td style="padding:6px">${h.paket}</td>
+      <td style="padding:6px">${h.time}</td>
+    </tr>`).join('');
+}
+function clearHistory(){
+  if(confirm('Hapus semua riwayat?')){ localStorage.removeItem('panelHistory'); renderHistory(); renderRecent(); }
+}
+
+/* panggil sekali saat load */
+renderHistory();
+renderRecent();
 </script>
 </body>
 </html>
